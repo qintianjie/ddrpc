@@ -12,10 +12,7 @@ public class DdrpcFactoryBean<T> implements FactoryBean<T>, InitializingBean {
 
 	private boolean addToConfig = true;
 
-	// private Map<Class<?>, T> proxyMap = new ConcurrentHashMap<>();
 	private final Map<Class<?>, DdrpcProxyFactory<T>> knownMappers = new HashMap<>();
-
-	// private final Map<Class<?>, T> knownMappers = new HashMap<>();
 
 	public DdrpcFactoryBean(Class<T> mapperInterface) {
 		this.mapperInterface = mapperInterface;

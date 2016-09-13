@@ -21,16 +21,15 @@ public class DdrpcProxyFactory<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+	// @TODO: write service proxy by javassist
 	public T newInstance() {
 		return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[] { mapperInterface }, new InvocationHandler() {
 
 			@Override
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				System.out.println("@TODO: write proxy by javassist." + args);
 				SampleService ss = new SampleServiceImpl();
-				ss.say((String)args[0], (Integer)args[1], (Date)args[2]);
-				
-				System.out.println("dododododo..." + args);
-				return null;
+				return ss.say((String)args[0], (Integer)args[1], (Date)args[2]);
 			}
 
 		});

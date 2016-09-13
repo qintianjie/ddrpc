@@ -161,28 +161,6 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 			definition.getPropertyValues().add("addToConfig", this.addToConfig);
 
 			boolean explicitFactoryUsed = false;
-//			if (StringUtils.hasText(this.sqlSessionFactoryBeanName)) {
-//				definition.getPropertyValues().add("sqlSessionFactory", new RuntimeBeanReference(this.sqlSessionFactoryBeanName));
-//				explicitFactoryUsed = true;
-//			} else if (this.sqlSessionFactory != null) {
-//				definition.getPropertyValues().add("sqlSessionFactory", this.sqlSessionFactory);
-//				explicitFactoryUsed = true;
-//			}
-//
-//			if (StringUtils.hasText(this.sqlSessionTemplateBeanName)) {
-//				if (explicitFactoryUsed) {
-//					logger.warn("Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored.");
-//				}
-//				definition.getPropertyValues().add("sqlSessionTemplate", new RuntimeBeanReference(this.sqlSessionTemplateBeanName));
-//				explicitFactoryUsed = true;
-//			} else if (this.sqlSessionTemplate != null) {
-//				if (explicitFactoryUsed) {
-//					logger.warn("Cannot use both: sqlSessionTemplate and sqlSessionFactory together. sqlSessionFactory is ignored.");
-//				}
-//				definition.getPropertyValues().add("sqlSessionTemplate", this.sqlSessionTemplate);
-//				explicitFactoryUsed = true;
-//			}
-
 			if (!explicitFactoryUsed) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Enabling autowire by type for MapperFactoryBean with name '" + holder.getBeanName() + "'.");
