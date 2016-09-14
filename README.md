@@ -19,4 +19,8 @@
 Update Logs
 ----
 <b>20160914</b>  
+    Test jenkins auto build
+
+<b>20160914</b>  
 	Demo 版完成，具有最基本的功能。 可根据 interface 在 proxy 中调用其具体实现的方法。
+
