@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -39,6 +40,11 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 		if (!ServiceFactoryBean.class.equals(mapperFactoryBeanClass)) {
 			scanner.setMapperFactoryBean(BeanUtils.instantiateClass(mapperFactoryBeanClass));
 		}
+		
+		Class<? extends BeanNameGenerator> generatorClass = annoAttrs.getClass("nameGenerator");
+	    if (!BeanNameGenerator.class.equals(generatorClass)) {
+	      scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));
+	    }
 		
 		scanner.setServiceFactoryRef(annoAttrs.getString("serviceFactoryRef"));
 

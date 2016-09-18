@@ -35,7 +35,6 @@ public class DdrpcProxyFactory<T>  {
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 				return method.invoke(implObj, args);
 			}
-
 		});
 	}
 

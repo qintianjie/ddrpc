@@ -21,9 +21,9 @@ public class DdrpcCoreApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(DdrpcCoreApplication.class, args);
-//		for (String name : context.getBeanDefinitionNames()) {
-//			System.out.println(name);
-//		}
+		for (String name : context.getBeanDefinitionNames()) {
+			System.out.println(name);
+		}
 		System.out.println("==========================================================");
 		SampleService sampleService =(SampleService) context.getBean("sampleService");
 		System.out.println(sampleService.say("jack", 12, new Date()));

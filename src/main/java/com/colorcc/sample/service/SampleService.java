@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.colorcc.ddrpc.core.annotation.DdrpcService;
 
+//@Service("sampleService")
 @DdrpcService(ibn="sampleServiceImpl")
 public interface SampleService {
 	

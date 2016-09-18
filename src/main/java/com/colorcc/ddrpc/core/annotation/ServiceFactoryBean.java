@@ -1,5 +1,6 @@
 package com.colorcc.ddrpc.core.annotation;
 
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -10,10 +11,11 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @param <T>
  */
-public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean {
+public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean, BeanNameAware {
 
 	private Class<T> mapperInterface;
 	private boolean addToConfig = true;
+	private transient String beanName;
 	ServiceReposity reposity = new ServiceReposity();
 
 	private DdrpcFactoryBean ddrpcFactoryBean;
@@ -71,6 +73,12 @@ public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean {
 
 	public void setAddToConfig(boolean addToConfig) {
 		this.addToConfig = addToConfig;
+	}
+
+
+	@Override
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
 	}
 
 }
