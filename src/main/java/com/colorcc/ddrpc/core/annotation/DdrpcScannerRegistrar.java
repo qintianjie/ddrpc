@@ -35,11 +35,21 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 		if (!Class.class.equals(markerInterface)) {
 			scanner.setMarkerInterface(markerInterface);
 		}
-		Class<? extends DdrpcFactoryBean<?>> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
-		if (!DdrpcFactoryBean.class.equals(mapperFactoryBeanClass)) {
+		Class<? extends ServiceFactoryBean<?>> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
+		if (!ServiceFactoryBean.class.equals(mapperFactoryBeanClass)) {
 			scanner.setMapperFactoryBean(BeanUtils.instantiateClass(mapperFactoryBeanClass));
 		}
+		
+		scanner.setServiceFactoryRef(annoAttrs.getString("serviceFactoryRef"));
 
+		List<String> basePackages = getBasePackages(annoAttrs);
+
+		scanner.registerFilters();
+		scanner.doScan(StringUtils.toStringArray(basePackages));
+
+	}
+
+	private List<String> getBasePackages(AnnotationAttributes annoAttrs) {
 		List<String> basePackages = new ArrayList<String>();
 		for (String pkg : annoAttrs.getStringArray("value")) {
 			if (StringUtils.hasText(pkg)) {
@@ -54,10 +64,7 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 		for (Class<?> clazz : annoAttrs.getClassArray("basePackageClasses")) {
 			basePackages.add(ClassUtils.getPackageName(clazz));
 		}
-
-		scanner.registerFilters();
-		scanner.doScan(StringUtils.toStringArray(basePackages));
-
+		return basePackages;
 	}
 
 	@Override

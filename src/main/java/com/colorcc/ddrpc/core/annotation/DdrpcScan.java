@@ -68,6 +68,9 @@ public @interface DdrpcScan {
 	 *
 	 */
 	@SuppressWarnings("rawtypes")
-	Class<? extends DdrpcFactoryBean> factoryBean() default DdrpcFactoryBean.class;
+	Class<? extends ServiceFactoryBean> factoryBean() default ServiceFactoryBean.class;
+	
+	
+	String serviceFactoryRef() default "ddrpcFactoryBean";
 
 }

@@ -6,8 +6,14 @@
 * 使用  & 配置简单。 基本功能仅需定义如下 config 即可 (其中 @DdrpcScan 指定要对外提供服务的 package 即可):
 	``` Java
 		@Configuration
+		@ConditionalOnProperty(prefix = "ddrpc", name = "enabled", havingValue = "true", matchIfMissing = true)
 		@DdrpcScan("com.colorcc.sample.service")
 		public class DdrpcConfig {
+			
+			@Bean
+			public DdrpcFactoryBean ddrpcFactoryBean() {
+				return new DdrpcFactoryBean();
+			}
 		
 		}
 	```
@@ -18,6 +24,10 @@
 
 Update Logs
 ----
+<b>20160919</b>  
+	重构了代码，去掉硬编码功能。 接口在使用代理时，通过 applicationContext get到具体的 spring 定义的 bean 执行。
+	@TODO: bean name,  package refractor ...
+    
 <b>20160914</b>  
     Test jenkins auto build
 

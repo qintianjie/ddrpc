@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -26,7 +27,17 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 
 	private Class<?> markerInterface;
 
-	private DdrpcFactoryBean<?> mapperFactoryBean = new DdrpcFactoryBean<>();
+	private ServiceFactoryBean<?> mapperFactoryBean = new ServiceFactoryBean<>();
+
+	private String serviceFactoryRef;
+
+	public String getServiceFactoryRef() {
+		return serviceFactoryRef;
+	}
+
+	public void setServiceFactoryRef(String serviceFactoryRef) {
+		this.serviceFactoryRef = serviceFactoryRef;
+	}
 
 	public boolean isAddToConfig() {
 		return addToConfig;
@@ -52,12 +63,12 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 		this.markerInterface = markerInterface;
 	}
 
-	public DdrpcFactoryBean<?> getMapperFactoryBean() {
+	public ServiceFactoryBean<?> getMapperFactoryBean() {
 		return mapperFactoryBean;
 	}
 
-	public void setMapperFactoryBean(DdrpcFactoryBean<?> mapperFactoryBean) {
-		this.mapperFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new DdrpcFactoryBean<>());
+	public void setMapperFactoryBean(ServiceFactoryBean<?> mapperFactoryBean) {
+		this.mapperFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new ServiceFactoryBean<>());
 	}
 
 	public DdrpcClassPathMapperScanner(BeanDefinitionRegistry registry) {
@@ -148,19 +159,25 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 		GenericBeanDefinition definition;
 		for (BeanDefinitionHolder holder : beanDefinitions) {
 			definition = (GenericBeanDefinition) holder.getBeanDefinition();
-
 			if (logger.isDebugEnabled()) {
 				logger.debug("Creating MapperFactoryBean with name '" + holder.getBeanName() + "' and '" + definition.getBeanClassName() + "' mapperInterface");
 			}
 
 			// the mapper interface is the original class of the bean
 			// but, the actual class of the bean is MapperFactoryBean
+			definition.setAttribute("name", definition.getBeanClassName());
 			definition.getPropertyValues().add("mapperInterface", definition.getBeanClassName());
 			definition.setBeanClass(this.mapperFactoryBean.getClass());
-
 			definition.getPropertyValues().add("addToConfig", this.addToConfig);
-
 			boolean explicitFactoryUsed = false;
+			if (this.serviceFactoryRef != null) {
+				if (explicitFactoryUsed) {
+					logger.warn("Cannot use both: serviceFactoryRef and sqlSessionFactory together. serviceFactoryRef is ignored.");
+				}
+				definition.getPropertyValues().add("ddrpcFactoryBean", new RuntimeBeanReference(this.serviceFactoryRef));
+				explicitFactoryUsed = true;
+			}
+
 			if (!explicitFactoryUsed) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Enabling autowire by type for MapperFactoryBean with name '" + holder.getBeanName() + "'.");
