@@ -26,7 +26,9 @@ Update Logs
 ----
 <b>20160919</b>  
 	重构了代码，去掉硬编码功能。 接口在使用代理时，通过 applicationContext get到具体的 spring 定义的 bean 执行。
-	@TODO: bean name,  package refractor ...
+	修改Java7环境依赖， type.getAnnotationsByType(DdrpcService.class) 只能用在 Java8 中
+	使用自定义 beanName  （ Service.class.getName() ）
+	@Will Do: package refactor ...
     
 <b>20160914</b>  
     Test jenkins auto build

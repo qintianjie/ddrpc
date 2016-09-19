@@ -3,7 +3,6 @@ package com.colorcc.ddrpc.core.annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -35,11 +34,19 @@ public class ServiceReposity {
 			if (!knownMappers.containsKey(type)) {
 				boolean loadCompleted = false;
 				try {
-					DdrpcService[] ddrpcAnno = type.getAnnotationsByType(DdrpcService.class);
 					String ibn = "";
-					if (ArrayUtils.isNotEmpty(ddrpcAnno)) {
-						ibn = ddrpcAnno[0].ibn();
+					// use it in java 8
+//					DdrpcService[] ddrpcAnno = type.getAnnotationsByType(DdrpcService.class);
+//					if (ArrayUtils.isNotEmpty(ddrpcAnno)) {
+//						ibn = ddrpcAnno[0].ibn();
+//					}
+					
+					// use it in java 7
+					DdrpcService ddrpcAnno = type.getAnnotation(DdrpcService.class);
+					if (ddrpcAnno != null) {
+						ibn = ddrpcAnno.ibn();
 					}
+					
 					if (StringUtils.isBlank(ibn)) {
 						String simpleName = type.getSimpleName();
 						Character  c = simpleName.charAt(0);

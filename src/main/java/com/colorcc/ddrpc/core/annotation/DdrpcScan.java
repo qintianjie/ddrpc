@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.Import;
-//import org.mybatis.spring.annotation.MapperScannerRegistrar;
-//import org.mybatis.spring.mapper.MapperFactoryBean;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -70,10 +68,13 @@ public @interface DdrpcScan {
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends ServiceFactoryBean> factoryBean() default ServiceFactoryBean.class;
-	
-	Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
-	
-	
+
+	/**
+	   * The {@link BeanNameGenerator} class to be used for naming detected components
+	   * within the Spring container.
+	   */
+	Class<? extends BeanNameGenerator> nameGenerator() default DdrpcBeanNameGenerator.class;
+
 	String serviceFactoryRef() default "ddrpcFactoryBean";
 
 }
