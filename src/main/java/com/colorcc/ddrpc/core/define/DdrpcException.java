@@ -7,7 +7,7 @@ package com.colorcc.ddrpc.core.define;
  * @version Sep 19, 2016 - 11:19:35 PM
  * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved.
  */
-public class DdrpcException extends Exception {
+public class DdrpcException extends RuntimeException {
 
 	public DdrpcException() {
 		super();
