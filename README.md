@@ -24,7 +24,7 @@
 
 Update Logs
 ----
-<p>
+<pre>
 <b>20160919</b>
 	代码重构，添加注解。
 	目前 project 分 com.colorcc.ddrpc.core 和 com.colorcc.sample 两个部分。 前者是框架，后者是 sample.
@@ -43,4 +43,4 @@ Update Logs
 
 <b>20160914</b>  
 	Demo 版完成，具有最基本的功能。 可根据 interface 在 proxy 中调用其具体实现的方法。
-</p>
+</pre>
