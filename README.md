@@ -24,7 +24,7 @@
 
 Update Logs
 ----
-<b>20160919</b>
+<b>20160919</b>  
 	代码重构，添加注解。
 	目前 project 分 com.colorcc.ddrpc.core 和 com.colorcc.sample 两个部分。 前者是框架，后者是 sample.
 	针对整个 sample，如果已分为 service -> serviceImpl 这样接口实现。 则只要添加 sample.config.DdrpcConfig即可。
