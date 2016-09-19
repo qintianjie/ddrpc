@@ -3,34 +3,15 @@ package com.colorcc.sample.service.impl;
 import java.text.DateFormat;
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import com.colorcc.sample.service.SampleService;
 @Component
-public class SampleServiceImpl implements SampleService, InitializingBean {
-	
-	@PostConstruct
-    public void postConst() {
-        System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>> postConst ");
-    }
-
-    @PreDestroy
-    public void preDestroy() {
-    	System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>> preDestroy ");
-    }
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>>> afterPropertiesSet ");
-	}
+public class SampleServiceImpl implements SampleService {
 
 	@Override
 	public String say() {
-		return "[sample say]sample say.";
+		return "[sample say] sample say.";
 	}
 
 	@Override

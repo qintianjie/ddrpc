@@ -10,29 +10,40 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.Import;
 
+import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
+import com.colorcc.ddrpc.core.define.DdrpcBeanNameGenerator;
+import com.colorcc.ddrpc.core.define.DdrpcScannerRegistrar;
+
+/**
+ * 扩展 annotaion
+ *
+ * @author Qin Tianjie
+ * @version Sep 19, 2016 - 10:41:14 PM 
+ * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
 @Import(DdrpcScannerRegistrar.class)
 public @interface DdrpcScan {
-/**
-	   * Alias for the {@link #basePackages()} attribute. Allows for more concise
-	   * annotation declarations e.g.:
-	   * {@code @EnableMyBatisMapperScanner("org.my.pkg")} instead of {@code
-	   * @EnableMyBatisMapperScanner(basePackages= "org.my.pkg"})}.
-	   */
+	/**
+	 * packages will be scan
+	 * 
+	 * @return
+	 */
 	String[] value() default {};
 
 	/**
-	 * Base packages to scan for MyBatis interfaces. Note that only interfaces
-	 * with at least one method will be registered; concrete classes will be
-	 * ignored.
+	 * 功能同 value
+	 * 
+	 * @return
 	 */
 	String[] basePackages() default {};
 
 	/**
-	 * Type-safe alternative to {@link #basePackages()} for specifying the
-	 * packages to scan for annotated components. The package of each class
+	 * 功能同 value 
+	 * Type-safe alternative to {@link #basePackages()} for specifying
+	 * the packages to scan for annotated components. The package of each class
 	 * specified will be scanned.
 	 * <p>
 	 * Consider creating a special no-op marker class or interface in each
@@ -52,6 +63,7 @@ public @interface DdrpcScan {
 	Class<? extends Annotation> annotationClass() default Annotation.class;
 
 	/**
+	 * Service 类型 
 	 * This property specifies the parent that the scanner will search for.
 	 * <p>
 	 * The scanner will register all interfaces in the base package that also
@@ -62,19 +74,23 @@ public @interface DdrpcScan {
 	Class<?> markerInterface() default Class.class;
 
 	/**
-	 * Specifies a custom MapperFactoryBean to return a mybatis proxy as spring
-	 * bean.
-	 *
+	 * 每个 markerInterface 都生成该类型的 proxy 
+	 * Specifies a custom ServiceFactoryBean to return a ddrpc proxy as spring bean.
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends ServiceFactoryBean> factoryBean() default ServiceFactoryBean.class;
 
 	/**
-	   * The {@link BeanNameGenerator} class to be used for naming detected components
-	   * within the Spring container.
-	   */
+	 * 命名规则
+	 * The {@link BeanNameGenerator} class to be used for naming detected
+	 * components within the Spring container.
+	 */
 	Class<? extends BeanNameGenerator> nameGenerator() default DdrpcBeanNameGenerator.class;
 
-	String serviceFactoryRef() default "ddrpcFactoryBean";
+	/**
+	 * 该类主要实现了 ApplicationContextAware 等接口，可实时拿到 context
+	 * @return
+	 */
+	String containerHook() default "containerHook";
 
 }

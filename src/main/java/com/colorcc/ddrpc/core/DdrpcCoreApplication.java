@@ -13,30 +13,27 @@ import com.colorcc.sample.service.SampleService;
 
 @PropertySource("classpath:/jack${qtj}.properties")
 @ComponentScan("com.colorcc.sample.service")
-@ComponentScan("com.colorcc.ddrpc.core.config")
-@ComponentScan("com.colorcc.ddrpc.core.annotation")
+@ComponentScan("com.colorcc.sample.config")
 @SpringBootApplication
-// @Import(JackConfig.class)
 public class DdrpcCoreApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(DdrpcCoreApplication.class, args);
-		for (String name : context.getBeanDefinitionNames()) {
-			System.out.println(name);
-		}
 		// @formatter:off
+//		for (String name : context.getBeanDefinitionNames()) {
+//			System.out.println(name);
+//		}
+		// @formatter:on
 		System.out.println("==========================================================");
-		// SampleService sampleService =(SampleService) context.getBean("sampleService");
 		SampleService sampleService = (SampleService) context.getBean(SampleService.class.getName());
 		System.out.println(sampleService.say("jack", 12, new Date()));
 		System.out.println(sampleService.say());
 		sampleService.say();
 		System.out.println("==========================================================");
-		// HelloService helloService =(HelloService) context.getBean("helloService");
-		// @formatter:on
 		HelloService helloService = (HelloService) context.getBean(HelloService.class.getName());
 		System.out.println(helloService.hello());
 		System.out.println(helloService.hello("jack"));
+		System.out.println("==========================================================");
 
 		System.out.println("done");
 	}

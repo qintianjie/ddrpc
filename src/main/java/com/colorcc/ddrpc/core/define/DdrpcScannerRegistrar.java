@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.core.annotation;
+package com.colorcc.ddrpc.core.define;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -15,13 +15,23 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import com.colorcc.ddrpc.core.annotation.DdrpcScan;
+import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
+
+/**
+ * 通过实现 ImportBeanDefinitionRegistrar 接口达到对 bean definition 自定义的目的
+ *
+ * @author Qin Tianjie
+ * @version Sep 19, 2016 - 10:39:56 PM
+ * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved.
+ */
 public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 	private ResourceLoader resourceLoader;
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		AnnotationAttributes annoAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(DdrpcScan.class.getName()));
-		DdrpcClassPathMapperScanner scanner = new DdrpcClassPathMapperScanner(registry);
+		DdrpcServiceClassPathScanner scanner = new DdrpcServiceClassPathScanner(registry);
 		// this check is needed in Spring 3.1
 		if (resourceLoader != null) {
 			scanner.setResourceLoader(resourceLoader);
@@ -46,7 +56,7 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 	      scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));
 	    }
 		
-		scanner.setServiceFactoryRef(annoAttrs.getString("serviceFactoryRef"));
+		scanner.setContainerHook(annoAttrs.getString("containerHook"));
 
 		List<String> basePackages = getBasePackages(annoAttrs);
 

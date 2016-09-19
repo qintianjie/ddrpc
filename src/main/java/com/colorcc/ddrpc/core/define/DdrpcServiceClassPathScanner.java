@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.core.annotation;
+package com.colorcc.ddrpc.core.define;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -19,24 +19,41 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 
-public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
+import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
+
+/**
+ * Service class path scan for bean definition.
+ *
+ * @author Qin Tianjie
+ * @version Sep 19, 2016 - 10:35:20 PM
+ * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved.
+ */
+public class DdrpcServiceClassPathScanner extends ClassPathBeanDefinitionScanner {
 
 	private boolean addToConfig = true;
 
 	private Class<? extends Annotation> annotationClass;
 
+	/**
+	 * 每一要定义的 service class
+	 */
 	private Class<?> markerInterface;
 
-	private ServiceFactoryBean<?> mapperFactoryBean = new ServiceFactoryBean<>();
+	/**
+	 * 每个 Service 都映射成该类型
+	 */
+	private ServiceFactoryBean<?> serviceFactoryBean = new ServiceFactoryBean<>();
 
-	private String serviceFactoryRef;
-
-	public String getServiceFactoryRef() {
-		return serviceFactoryRef;
+	/**
+	 * 工具类，用户得到 spring container信息
+	 */
+	private String containerHook;
+	public String getContainerHook() {
+		return containerHook;
 	}
 
-	public void setServiceFactoryRef(String serviceFactoryRef) {
-		this.serviceFactoryRef = serviceFactoryRef;
+	public void setContainerHook(String containerHook) {
+		this.containerHook = containerHook;
 	}
 
 	public boolean isAddToConfig() {
@@ -64,14 +81,14 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	}
 
 	public ServiceFactoryBean<?> getMapperFactoryBean() {
-		return mapperFactoryBean;
+		return serviceFactoryBean;
 	}
 
 	public void setMapperFactoryBean(ServiceFactoryBean<?> mapperFactoryBean) {
-		this.mapperFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new ServiceFactoryBean<>());
+		this.serviceFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new ServiceFactoryBean<>());
 	}
 
-	public DdrpcClassPathMapperScanner(BeanDefinitionRegistry registry) {
+	public DdrpcServiceClassPathScanner(BeanDefinitionRegistry registry) {
 		super(registry);
 	}
 
@@ -167,14 +184,14 @@ public class DdrpcClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 			// but, the actual class of the bean is MapperFactoryBean
 			definition.setAttribute("name", definition.getBeanClassName());
 			definition.getPropertyValues().add("mapperInterface", definition.getBeanClassName());
-			definition.setBeanClass(this.mapperFactoryBean.getClass());
+			definition.setBeanClass(this.serviceFactoryBean.getClass());
 			definition.getPropertyValues().add("addToConfig", this.addToConfig);
 			boolean explicitFactoryUsed = false;
-			if (this.serviceFactoryRef != null) {
+			if (this.containerHook != null) {
 				if (explicitFactoryUsed) {
 					logger.warn("Cannot use both: serviceFactoryRef and sqlSessionFactory together. serviceFactoryRef is ignored.");
 				}
-				definition.getPropertyValues().add("ddrpcFactoryBean", new RuntimeBeanReference(this.serviceFactoryRef));
+				definition.getPropertyValues().add("containerHook", new RuntimeBeanReference(this.containerHook));
 				explicitFactoryUsed = true;
 			}
 

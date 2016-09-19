@@ -24,6 +24,14 @@
 
 Update Logs
 ----
+<p>
+<b>20160919</b>
+	代码重构，添加注解。
+	目前 project 分 com.colorcc.ddrpc.core 和 com.colorcc.sample 两个部分。 前者是框架，后者是 sample.
+	针对整个 sample，如果已分为 service -> serviceImpl 这样接口实现。 则只要添加 sample.config.DdrpcConfig即可。
+	   否则，需要先将项目改造成按接口实现，再添加 DdrpcConfig 配置
+	@Will Do: logger & javassist proxy
+
 <b>20160919</b>  
 	重构了代码，去掉硬编码功能。 接口在使用代理时，通过 applicationContext get到具体的 spring 定义的 bean 执行。
 	修改Java7环境依赖， type.getAnnotationsByType(DdrpcService.class) 只能用在 Java8 中
@@ -35,4 +43,4 @@ Update Logs
 
 <b>20160914</b>  
 	Demo 版完成，具有最基本的功能。 可根据 interface 在 proxy 中调用其具体实现的方法。
-
+</p>
