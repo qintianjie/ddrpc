@@ -26,7 +26,8 @@ Update Logs
 ----
 <b>20161010</b>  
 	代码保存,存在编译错误.
-	@TODO:
+	
+	@TODO:  
 		1. Service 对应 proxy 生成. 简单点考虑 jdk 自动生成,复杂考虑 javassist 写公用 proxy  
 		2. Client 端将 service 的 每个 method 生成 Method对象,根据 methodName, params type/value, return type 等将 Method 对象 encoder 成 ByteBuf 准备 TCP 网络传输.  
 		3. Client 端生成 proxy同时,需创建 netty client 并在 channelActive 时将 ByteBuf 发出去.  
