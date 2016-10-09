@@ -27,13 +27,13 @@ Update Logs
 <b>20161010</b>  
 	代码保存,存在编译错误.
 	@TODO:
-		1. Service 对应 proxy 生成. 简单点考虑 jdk 自动生成,复杂考虑 javassist 写公用 proxy
-		2. Client 端将 service 的 每个 method 生成 Method对象,根据 methodName, params type/value, return type 等将 Method 对象 encoder 成 ByteBuf 准备 TCP 网络传输.
-		3. Client 端生成 proxy同时,需创建 netty client 并在 channelActive 时将 ByteBuf 发出去.
-		4. Server 端生成 proxy对象,这里是根据 service type + ref object 生成,因此真正的service method invoke 就是 ref object 的 method invoke, 从而达到方法在对象上执行.
-		5. Server 端创建 netty server,根据步骤 3　接受 tcp ByteBuf,在 channelRead 方法对其进行 decoder(msg),得到的是客户端 Method　对象属性,根据该对象在步骤2提供的属性,找到 ref object　对应的方法,将步骤2的 valuec传入 ref object　方法执行.
-		6.　如有必要,ref object　执行结果在 netty server进行 encoder->ByteBuf　并 writeAndFlush　到 Buffer　进行发送.
-		7.　Client端 netty client　有个 channelHandler　方法 channelRead　得到 response,进行 decoder　后可继续处理最终结果.
+		1. Service 对应 proxy 生成. 简单点考虑 jdk 自动生成,复杂考虑 javassist 写公用 proxy  
+		2. Client 端将 service 的 每个 method 生成 Method对象,根据 methodName, params type/value, return type 等将 Method 对象 encoder 成 ByteBuf 准备 TCP 网络传输.  
+		3. Client 端生成 proxy同时,需创建 netty client 并在 channelActive 时将 ByteBuf 发出去.  
+		4. Server 端生成 proxy对象,这里是根据 service type + ref object 生成,因此真正的service method invoke 就是 ref object 的 method invoke, 从而达到方法在对象上执行.  
+		5. Server 端创建 netty server,根据步骤 3　接受 tcp ByteBuf,在 channelRead 方法对其进行 decoder(msg),得到的是客户端 Method　对象属性,根据该对象在步骤2提供的属性,找到 ref object　对应的方法,将步骤2的 valuec传入 ref object　方法执行.  
+		6.　如有必要,ref object　执行结果在 netty server进行 encoder->ByteBuf　并 writeAndFlush　到 Buffer　进行发送.  
+		7.　Client端 netty client　有个 channelHandler　方法 channelRead　得到 response,进行 decoder　后可继续处理最终结果.  
 		
 <b>20160919</b>  
 	代码重构，添加注解。
