@@ -52,6 +52,11 @@
 			<artifactId>commons-net</artifactId>
 			<version>3.5</version>
 		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.5.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>
