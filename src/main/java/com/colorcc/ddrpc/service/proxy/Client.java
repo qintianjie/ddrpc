@@ -6,13 +6,11 @@ import com.colorcc.ddrpc.service.tools.URI;
 
 public interface Client {
 	
-	void connect(URI uri) throws Exception;
+	public void connect(final URI uri) throws Exception;
 
     void close() throws IOException;
 
-    URI getUri();
-    
-    public void send();
+    public void send(Object obj, URI uri);
     
     
 

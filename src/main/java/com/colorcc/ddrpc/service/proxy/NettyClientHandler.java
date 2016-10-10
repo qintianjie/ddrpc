@@ -9,7 +9,7 @@ import java.net.SocketAddress;
 
 import com.colorcc.ddrpc.service.tools.URI;
 
-public class NettyClientHandler<T> extends ChannelDuplexHandler {
+public class NettyClientHandler extends ChannelDuplexHandler {
 	
 	 private final ChannelHandler handler;
 	 private final URI url;
@@ -27,26 +27,30 @@ public class NettyClientHandler<T> extends ChannelDuplexHandler {
 
 	@Override
 	public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) throws Exception {
-		// TODO Auto-generated method stub
-		super.connect(ctx, remoteAddress, localAddress, promise);
+		System.out.println("connect ..." + url + handler);
+//		// TODO Auto-generated method stub
+//		super.connect(ctx, remoteAddress, localAddress, promise);
 	}
 
 	@Override
 	public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-		// TODO Auto-generated method stub
-		super.disconnect(ctx, promise);
+//		// TODO Auto-generated method stub
+//		super.disconnect(ctx, promise);
+		System.out.println("dis ...");
 	}
 
 	@Override
 	public void read(ChannelHandlerContext ctx) throws Exception {
-		// TODO Auto-generated method stub
-		super.read(ctx);
+//		// TODO Auto-generated method stub
+//		super.read(ctx);
+		System.out.println("read, get response ...");
 	}
 
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-		// TODO Auto-generated method stub
-		super.write(ctx, msg, promise);
+//		// TODO Auto-generated method stub
+//		super.write(ctx, msg, promise);
+		System.out.println("write, send msg ...");
 	}
 	
 	
