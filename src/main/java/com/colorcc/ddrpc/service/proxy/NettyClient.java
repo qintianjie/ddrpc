@@ -51,7 +51,9 @@ public class NettyClient implements Client {
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline().addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)), new ObjectEncoder()).addLast(new NettyClientHandler(uri, channelHandler));
+				ch.pipeline()
+				.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)), new ObjectEncoder())
+				.addLast(new NettyClientHandler(uri, channelHandler));
 			}
 		});
 

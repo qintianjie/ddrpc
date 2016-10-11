@@ -10,8 +10,6 @@ public class AbstractServiceProxy<T> implements ServiceProxy<T> {
 		this.ifs = ifs;
 		this.uri = uri;
 	}
-	
-	
 
 	@Override
 	public Class<T> getInterface() {
