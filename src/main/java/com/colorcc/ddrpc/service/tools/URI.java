@@ -37,7 +37,6 @@ import com.colorcc.ddrpc.service.tools.StringUtils;
  * URI
  * 
  * 替换java.net.URI 线程安全
- * @author liutao04@baidu.com
  * 
  */
 public final class URI {
