@@ -13,22 +13,22 @@ public class ClientInHandler extends ChannelInboundHandlerAdapter {
 		ctx.writeAndFlush("$$$using:" + t);
 	}
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		// TODO Auto-generated method stub
-		super.channelRead(ctx, msg);
-	}
-
-	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-		// TODO Auto-generated method stub
-		super.channelReadComplete(ctx);
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		// TODO Auto-generated method stub
-		super.exceptionCaught(ctx, cause);
-	}
+//	@Override
+//	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+//		// TODO Auto-generated method stub
+//		super.channelRead(ctx, msg);
+//	}
+//
+//	@Override
+//	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+//		// TODO Auto-generated method stub
+//		super.channelReadComplete(ctx);
+//	}
+//
+//	@Override
+//	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+//		// TODO Auto-generated method stub
+//		super.exceptionCaught(ctx, cause);
+//	}
 
 }

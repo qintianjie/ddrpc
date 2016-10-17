@@ -24,10 +24,15 @@ public class NServer {
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
-//						ch.pipeline()
-//						.addLast(new StringDecoder(), new ServerInHandler());
+						// in:   decoder: [byte] --StringDecoder--> [string] --StringToRpcRequestDecoder--> [RpcRequest] --ServerInHandler--> [RpcResponse] --> write
+						// out:  encoder: byte <--StringToByteEncoder-- [string] <--RpcResponseToStringEncoder-- [RpcResponse]
 						ch.pipeline()
-							.addLast(new StringDecoder(), new RpcResponseEncoder(), new ServerInHandler());
+							.addLast(new StringDecoder(),  //in.1:  byte -> String
+									new StringToRpcRequestDecoder(), //in.2:  String -> RpcRequest
+//									new RpcResponseEncoder(), 
+									new StringToByteEncoder(),  // out.2: String -> byte
+									new RpcResponseToStringEncoder(), // out.1: RpcResponse -> String
+									new ServerInHandler()); // in.3:  handler -> RpcResponse
 					}
 					
 				});

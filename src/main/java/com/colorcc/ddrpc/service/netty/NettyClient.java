@@ -42,9 +42,7 @@ public class NettyClient {
 	}
 
 	public void init() {
-		EventLoopGroup group = new NioEventLoopGroup();
-
-		bootstrap.group(group).channel(NioSocketChannel.class).remoteAddress("127.0.0.1", 9088).option(ChannelOption.SO_BACKLOG, 1024).handler(new ChannelInitializer<SocketChannel>() {
+		bootstrap.channel(NioSocketChannel.class).remoteAddress("127.0.0.1", 9088).option(ChannelOption.SO_BACKLOG, 1024).handler(new ChannelInitializer<SocketChannel>() {
 			@Override
 			protected void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline()
@@ -83,8 +81,10 @@ public class NettyClient {
 	public Object request(MethodMeta methodMeta, Object[] paramValues) {
 		this.getRpcRequest().setMethodMeta(methodMeta);
 		this.getRpcRequest().setParamValues(paramValues);
+		
+		EventLoopGroup group = new NioEventLoopGroup();
 		try {
-			ChannelFuture f = this.getBootstrap().connect().sync();
+			ChannelFuture f = this.getBootstrap().group(group).connect().sync();
 			// 根据 channelRead 处理 reslt
 //			f.addListener(new ChannelFutureListener() {
 //				@Override
@@ -99,6 +99,8 @@ public class NettyClient {
 			f.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} finally {
+			group.shutdownGracefully();
 		}
 		return null;
 	}
