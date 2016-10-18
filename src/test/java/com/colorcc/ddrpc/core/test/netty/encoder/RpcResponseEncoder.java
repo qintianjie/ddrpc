@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.test.netty.pojo;
+package com.colorcc.ddrpc.core.test.netty.encoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -6,6 +6,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.CharsetUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.colorcc.ddrpc.core.test.netty.pojo.RpcResponse;
 
 public class RpcResponseEncoder extends MessageToByteEncoder<RpcResponse> {
 

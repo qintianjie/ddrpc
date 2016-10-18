@@ -1,8 +1,6 @@
-package com.colorcc.ddrpc.test.netty.pojo;
+package com.colorcc.ddrpc.core.test.netty.pojo;
 
 import java.io.Serializable;
-
-import com.colorcc.ddrpc.test.meta.MethodMeta;
 
 public class RpcRequest implements Serializable {
 	private static final long serialVersionUID = -2120242606253544407L;

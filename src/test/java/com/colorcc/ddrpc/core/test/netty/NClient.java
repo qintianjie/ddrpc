@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.test.netty;
+package com.colorcc.ddrpc.core.test.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -10,6 +10,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+
+import com.colorcc.ddrpc.core.test.netty.decoder.StringToRpcResponseDecoder;
+import com.colorcc.ddrpc.core.test.netty.encoder.RpcRequestToStringEncoder;
 
 public class NClient {
 	
@@ -27,9 +30,10 @@ public class NClient {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
-						.addLast(new StringEncoder(),  // out.2 --> String  to byte
+						.addLast(new StringDecoder(),  // in.1  --> byte to string
+								new StringToRpcResponseDecoder(), // in.2 string to rpcresponse
+								new StringEncoder(),  // out.2 --> String  to byte
 								new RpcRequestToStringEncoder(),  // out.1 --> RpcRequest to string
-								new StringDecoder(),  // in.1  --> byte to string
 								new ClientInHandler(null)); // biz process, write request in channelActive
 					}
 					

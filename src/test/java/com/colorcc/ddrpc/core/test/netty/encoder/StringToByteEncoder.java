@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.test.netty;
+package com.colorcc.ddrpc.core.test.netty.encoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

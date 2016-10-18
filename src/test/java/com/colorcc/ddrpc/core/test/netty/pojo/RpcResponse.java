@@ -1,4 +1,4 @@
-package com.colorcc.ddrpc.test.netty;
+package com.colorcc.ddrpc.core.test.netty.pojo;
 
 import java.io.Serializable;
 
