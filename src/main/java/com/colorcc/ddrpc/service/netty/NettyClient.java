@@ -9,15 +9,22 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
-import com.colorcc.ddrpc.service.netty.handler.ClientInHandler;
+import com.colorcc.ddrpc.service.netty.callback.ClientCallback;
+import com.colorcc.ddrpc.service.netty.decoder.StringToRpcResponseDecoder;
+import com.colorcc.ddrpc.service.netty.encoder.RpcRequestToStringEncoder;
 import com.colorcc.ddrpc.service.netty.handler.RpcClientInHandler;
-import com.colorcc.ddrpc.service.netty.handler.StringToRpcRequestDecoder;
 import com.colorcc.ddrpc.service.netty.pojo.MethodMeta;
 import com.colorcc.ddrpc.service.netty.pojo.RpcRequest;
+import com.colorcc.ddrpc.service.netty.pojo.RpcResponse;
 
 /**
  * Netty Client 用于方法调用时发起一个  connect 请求, 转发 server 返回的结果 
+ * 使用步骤:
+ * 	NettyClient client = new NettyClient(RpcRequest, ClientCallback); // that include init()
+ *  client.request(MethodMeta methodMeta, Object[] paramValues); 
+ *  Object result = callback.getResult();
  *
  * @author Qin Tianjie
  * @version Oct 17, 2016 - 1:21:48 AM
@@ -26,6 +33,7 @@ import com.colorcc.ddrpc.service.netty.pojo.RpcRequest;
 public class NettyClient {
 
 	private RpcRequest rpcRequest;
+	private ClientCallback<RpcResponse> callback;
 	private Bootstrap bootstrap;
 
 	public Bootstrap getBootstrap() {
@@ -36,8 +44,13 @@ public class NettyClient {
 		return rpcRequest;
 	}
 
-	public NettyClient(RpcRequest rpcRequest) {
+	public ClientCallback<RpcResponse> getCallback() {
+		return callback;
+	}
+
+	public NettyClient(RpcRequest rpcRequest, ClientCallback<RpcResponse> callback) {
 		this.rpcRequest = rpcRequest;
+		this.callback = callback;
 		init();
 	}
 
@@ -64,9 +77,10 @@ public class NettyClient {
 				//  ClientInHandler --> 对 RpcRequest 处理 , 可以进行 ctx.flush(); 返回
 				//  RpcClientInHandler --> 如果需要,继续对 ClientInHandler 进行处理
 				.addLast(new StringDecoder(), 
-						 new StringToRpcRequestDecoder(), 
-						 new ClientInHandler(), 
-						 new RpcClientInHandler(rpcRequest));
+						 new StringToRpcResponseDecoder(), 
+						 new StringEncoder(), // String -> byte
+						 new RpcRequestToStringEncoder(),
+						 new RpcClientInHandler<RpcResponse>(getRpcRequest(), getCallback()));
 			}
 
 		});
@@ -78,19 +92,18 @@ public class NettyClient {
 	 * @param paramValues 请求参数 
 	 * @return
 	 */
-	public Object request(MethodMeta methodMeta, Object[] paramValues) {
+	public void request(MethodMeta methodMeta, Object[] paramValues) {
 		this.getRpcRequest().setMethodMeta(methodMeta);
 		this.getRpcRequest().setParamValues(paramValues);
-		
 		EventLoopGroup group = new NioEventLoopGroup();
 		try {
 			ChannelFuture f = this.getBootstrap().group(group).connect().sync();
-			// 根据 channelRead 处理 reslt
+//			// 根据 channelRead 处理 reslt
 //			f.addListener(new ChannelFutureListener() {
 //				@Override
 //				public void operationComplete(ChannelFuture future) throws Exception {
 //					if (future.isSuccess()) {
-//						
+//						callback.processResponse(t);
 //					} else {
 //						// log it
 //					}
@@ -102,7 +115,10 @@ public class NettyClient {
 		} finally {
 			group.shutdownGracefully();
 		}
-		return null;
+	}
+	
+	public Object getResult() {
+		return callback.getResult();
 	}
 
 }

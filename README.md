@@ -24,6 +24,10 @@
 
 Update Logs
 ----
+<b>20161019</b>  
+	Netty 范例代码跑通
+	NettyClient 开发,考虑通过 callback 机制返回 respose 供 consumer 端处理
+	
 <b>20161017</b>  
 	Netty 代码部分提交
 
