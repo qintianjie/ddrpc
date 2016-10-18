@@ -1,18 +1,3 @@
-/**
- * Copyright 2011 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.colorcc.ddrpc.service.tools;
 
 import java.io.UnsupportedEncodingException;
@@ -27,19 +12,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.colorcc.ddrpc.service.tools.CollectionUtils;
-import com.colorcc.ddrpc.service.tools.Constants;
-import com.colorcc.ddrpc.service.tools.NetUtils;
-import com.colorcc.ddrpc.service.tools.StringUtils;
-
 /**
  * 
- * URI
+ * URL
  * 
- * 替换java.net.URI 线程安全
+ * 替换java.net.URL 线程安全
  * 
  */
-public final class URI {
+public final class URL {
 
     private final String protocol;
 
@@ -89,18 +69,18 @@ public final class URI {
             this.port = port;
         }
 
-        public Builder(URI uri) {
-            this.protocol = uri.getProtocol();
-            this.host = uri.getHost();
-            this.port = uri.getPort();
-            this.username = uri.getUsername();
-            this.password = uri.getPassword();
-            this.path = uri.getPath();
-            this.parameters.putAll(uri.getParameters());// 返回的是UnmodifiableMap
+        public Builder(URL url) {
+            this.protocol = url.getProtocol();
+            this.host = url.getHost();
+            this.port = url.getPort();
+            this.username = url.getUsername();
+            this.password = url.getPassword();
+            this.path = url.getPath();
+            this.parameters.putAll(url.getParameters());// 返回的是UnmodifiableMap
         }
 
-        public Builder(String uri) {
-            this(valueOf(uri));
+        public Builder(String url) {
+            this(valueOf(url));
         }
 
         public Builder path(String path) {
@@ -193,20 +173,20 @@ public final class URI {
             return this;
         }
 
-        public URI build() {
-            return new URI(this);
+        public URL build() {
+            return new URL(this);
         }
     }
 
-    public URI(Builder builder) {
+    public URL(Builder builder) {
         this(builder.protocol, builder.username, builder.password, builder.host, builder.port, builder.path,
                 builder.parameters);
     }
 
-    public URI(String protocol, String username, String password, String host, int port, String path,
+    public URL(String protocol, String username, String password, String host, int port, String path,
             Map<String, String> parameters) {
         if ((username == null || username.length() == 0) && password != null && password.length() > 0) {
-            throw new IllegalArgumentException("Invalid uri, password without username!");
+            throw new IllegalArgumentException("Invalid url, password without username!");
         }
         this.protocol = protocol;
         this.username = username;
@@ -236,14 +216,14 @@ public final class URI {
     }
 
     /**
-     * Parse uri string
+     * Parse url string
      * 
-     * @param uri URL string
-     * @return URI instance
+     * @param url URL string
+     * @return URL instance
      */
-    public static URI valueOf(String uri) {
-        if (uri == null || (uri = uri.trim()).length() == 0) {
-            throw new IllegalArgumentException("uri == null");
+    public static URL valueOf(String url) {
+        if (url == null || (url = url.trim()).length() == 0) {
+            throw new IllegalArgumentException("url == null");
         }
         String protocol = null;
         String username = null;
@@ -252,9 +232,9 @@ public final class URI {
         int port = 0;
         String path = null;
         Map<String, String> parameters = null;
-        int i = uri.indexOf("?"); // seperator between body and parameters
+        int i = url.indexOf("?"); // seperator between body and parameters
         if (i >= 0) {
-            String[] parts = uri.substring(i + 1).split("\\&");
+            String[] parts = url.substring(i + 1).split("\\&");
             parameters = new HashMap<String, String>();
             for (String part : parts) {
                 part = part.trim();
@@ -267,48 +247,48 @@ public final class URI {
                     }
                 }
             }
-            uri = uri.substring(0, i);
+            url = url.substring(0, i);
         }
-        i = uri.indexOf("://");
+        i = url.indexOf("://");
         if (i >= 0) {
             if (i == 0)
-                throw new IllegalStateException("uri missing protocol: \"" + uri + "\"");
-            protocol = uri.substring(0, i);
-            uri = uri.substring(i + 3);
+                throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+            protocol = url.substring(0, i);
+            url = url.substring(i + 3);
         } else {
             // case: file:/path/to/file.txt
-            i = uri.indexOf(":/");
+            i = url.indexOf(":/");
             if (i >= 0) {
                 if (i == 0)
-                    throw new IllegalStateException("uri missing protocol: \"" + uri + "\"");
-                protocol = uri.substring(0, i);
-                uri = uri.substring(i + 1);
+                    throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+                protocol = url.substring(0, i);
+                url = url.substring(i + 1);
             }
         }
 
-        i = uri.indexOf("/");
+        i = url.indexOf("/");
         if (i >= 0) {
-            path = uri.substring(i + 1);
-            uri = uri.substring(0, i);
+            path = url.substring(i + 1);
+            url = url.substring(0, i);
         }
-        i = uri.indexOf("@");
+        i = url.indexOf("@");
         if (i >= 0) {
-            username = uri.substring(0, i);
+            username = url.substring(0, i);
             int j = username.indexOf(":");
             if (j >= 0) {
                 password = username.substring(j + 1);
                 username = username.substring(0, j);
             }
-            uri = uri.substring(i + 1);
+            url = url.substring(i + 1);
         }
-        i = uri.indexOf(":");
-        if (i >= 0 && i < uri.length() - 1) {
-            port = Integer.parseInt(uri.substring(i + 1));
-            uri = uri.substring(0, i);
+        i = url.indexOf(":");
+        if (i >= 0 && i < url.length() - 1) {
+            port = Integer.parseInt(url.substring(i + 1));
+            url = url.substring(0, i);
         }
-        if (uri.length() > 0)
-            host = uri;
-        return new URI(protocol, username, password, host, port, path, parameters);
+        if (url.length() > 0)
+            host = url;
+        return new URL(protocol, username, password, host, port, path, parameters);
     }
 
     public String getProtocol() {
@@ -350,28 +330,28 @@ public final class URI {
         return path;
     }
 
-    public URI resetPath(String path) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetPath(String path) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public URI resetHost(String host) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetHost(String host) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public URI resetPort(int port) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetPort(int port) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public URI resetProtocol(String protocol) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetProtocol(String protocol) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public URI resetUsername(String username) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetUsername(String username) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
-    public URI resetPassword(String password) {
-        return new URI(protocol, username, password, host, port, path, getParameters());
+    public URL resetPassword(String password) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
     }
 
     public Map<String, String> getParameters() {
@@ -502,11 +482,11 @@ public final class URI {
     }
 
     public String getMethodParameterAndDecoded(String method, String key) {
-        return URI.decode(getMethodParameter(method, key));
+        return URL.decode(getMethodParameter(method, key));
     }
 
     public String getMethodParameterAndDecoded(String method, String key, String defaultValue) {
-        return URI.decode(getMethodParameter(method, key, defaultValue));
+        return URL.decode(getMethodParameter(method, key, defaultValue));
     }
 
     public String getMethodParameter(String method, String key) {
@@ -606,13 +586,13 @@ public final class URI {
      * @param parameters
      * @return
      */
-    public URI addParameters(Map<String, String> parameters) {
+    public URL addParameters(Map<String, String> parameters) {
         if (parameters == null || parameters.size() == 0) {
             return this;
         }
         Map<String, String> map = new HashMap<String, String>(getParameters());
         map.putAll(parameters);
-        return new URI(protocol, username, password, host, port, path, map);
+        return new URL(protocol, username, password, host, port, path, map);
     }
 
     /**
@@ -620,7 +600,7 @@ public final class URI {
      * @param parameters
      * @return
      */
-    public URI addParameters(String... pairs) {
+    public URL addParameters(String... pairs) {
         return addParameters(CollectionUtils.toStringMap(pairs));
     }
 
@@ -629,7 +609,7 @@ public final class URI {
      * @param parameters
      * @return
      */
-    public URI addParameterString(String query) {
+    public URL addParameterString(String query) {
         if (query == null || query.length() == 0) {
             return this;
         }
@@ -641,30 +621,30 @@ public final class URI {
      * @param parameters
      * @return
      */
-    public URI addParametersIfAbsent(Map<String, String> parameters) {
+    public URL addParametersIfAbsent(Map<String, String> parameters) {
         if (parameters == null || parameters.size() == 0) {
             return this;
         }
         Map<String, String> map = new HashMap<String, String>(parameters);
         map.putAll(getParameters());
-        return new URI(protocol, username, password, host, port, path, map);
+        return new URL(protocol, username, password, host, port, path, map);
     }
 
-    public URI removeParameter(String key) {
+    public URL removeParameter(String key) {
         if (key == null || key.length() == 0) {
             return this;
         }
         return removeParameters(key);
     }
 
-    public URI removeParameters(Collection<String> keys) {
+    public URL removeParameters(Collection<String> keys) {
         if (keys == null || keys.size() == 0) {
             return this;
         }
         return removeParameters(keys.toArray(new String[0]));
     }
 
-    public URI removeParameters(String... keys) {
+    public URL removeParameters(String... keys) {
         if (keys == null || keys.length == 0) {
             return this;
         }
@@ -675,11 +655,11 @@ public final class URI {
         if (map.size() == getParameters().size()) {
             return this;
         }
-        return new URI(protocol, username, password, host, port, path, map);
+        return new URL(protocol, username, password, host, port, path, map);
     }
 
-    public URI clearParameters() {
-        return new URI(protocol, username, password, host, port, path, new HashMap<String, String>());
+    public URL clearParameters() {
+        return new URL(protocol, username, password, host, port, path, new HashMap<String, String>());
     }
 
     @Override
@@ -799,7 +779,7 @@ public final class URI {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        URI other = (URI) obj;
+        URL other = (URL) obj;
         if (host == null) {
             if (other.host != null)
                 return false;

@@ -2,15 +2,15 @@ package com.colorcc.ddrpc.service.proxy;
 
 import java.io.IOException;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public interface Client {
 	
-	public void connect(final URI uri) throws Exception;
+	public void connect(final URL url) throws Exception;
 
     void close() throws IOException;
 
-    public void send(Object obj, URI uri);
+    public void send(Object obj, URL url);
     
     
 

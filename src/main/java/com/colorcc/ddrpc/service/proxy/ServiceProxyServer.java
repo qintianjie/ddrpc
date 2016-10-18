@@ -2,7 +2,7 @@ package com.colorcc.ddrpc.service.proxy;
 
 import java.lang.reflect.Method;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 
 public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
@@ -13,8 +13,8 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 		return impl;
 	}
 
-	public ServiceProxyServer(Class<T> ifs, URI uri, T impl, Client client) {
-		super(ifs, uri);
+	public ServiceProxyServer(Class<T> ifs, URL url, T impl, Client client) {
+		super(ifs, url);
 		this.impl = impl;
 		this.client = client;
 		

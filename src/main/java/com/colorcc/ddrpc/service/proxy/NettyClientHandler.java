@@ -7,14 +7,14 @@ import io.netty.channel.ChannelPromise;
 
 import java.net.SocketAddress;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class NettyClientHandler extends ChannelDuplexHandler {
 	
 	 private final ChannelHandler handler;
-	 private final URI url;
+	 private final URL url;
 	 
-	 public NettyClientHandler(URI url, ChannelHandler handler){
+	 public NettyClientHandler(URL url, ChannelHandler handler){
 	        if (url == null) {
 	            throw new IllegalArgumentException("url == null");
 	        }

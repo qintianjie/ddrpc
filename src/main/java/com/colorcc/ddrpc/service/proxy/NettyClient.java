@@ -16,7 +16,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class NettyClient implements Client {
 
@@ -33,19 +33,19 @@ public class NettyClient implements Client {
 	}
 
 	@Override
-	public void send(Object obj, URI uri) {
+	public void send(Object obj, URL url) {
 
 	}
 
 	@Override
-	public void connect(final URI uri) throws Exception {
-		if (uri == null) {
+	public void connect(final URL url) throws Exception {
+		if (url == null) {
 			throw new IllegalArgumentException("uri is null");
 		}
 
 		bootstrap = new Bootstrap();
 		bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
-		.remoteAddress(new InetSocketAddress(uri.getHost(), uri.getPort())).option(ChannelOption.SO_KEEPALIVE, true)
+		.remoteAddress(new InetSocketAddress(url.getHost(), url.getPort())).option(ChannelOption.SO_KEEPALIVE, true)
 				.option(ChannelOption.TCP_NODELAY, true).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 500000);
 
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
@@ -53,7 +53,7 @@ public class NettyClient implements Client {
 			protected void initChannel(SocketChannel ch) throws Exception {
 				ch.pipeline()
 				.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)), new ObjectEncoder())
-				.addLast(new NettyClientHandler(uri, channelHandler));
+				.addLast(new NettyClientHandler(url, channelHandler));
 			}
 		});
 

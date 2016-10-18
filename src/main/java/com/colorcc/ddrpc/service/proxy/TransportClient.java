@@ -12,30 +12,31 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-import com.colorcc.ddrpc.service.tools.URI;
+
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class TransportClient<T> implements Transport {
 
 	private T result;
-	private URI uri;
+	private URL url;
 
-	public TransportClient(T result, URI uri) {
+	public TransportClient(T result, URL url) {
 		this.result = result;
-		this.uri = uri;
+		this.url = url;
 	}
 
 	public final T getResult() {
 		return result;
 	}
 
-	public URI getUri() {
-		return uri;
+	public URL getUrl() {
+		return this.url;
 	}
 
 	public static void main(String[] args) {
 		Request request = new RpcRequest();
-		URI uri = new URI("http", null, null, "127.0.0.1", 8080, null, null);
-		TransportClient<Request> tc = new TransportClient<>(request, uri);
+		URL url = new URL("http", null, null, "127.0.0.1", 8080, null, null);
+		TransportClient<Request> tc = new TransportClient<>(request, url);
 		tc.doRequest();
 	}
 
@@ -44,7 +45,7 @@ public class TransportClient<T> implements Transport {
 
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(group)
-				.remoteAddress(getUri().getHost(), getUri().getPort())
+				.remoteAddress(getUrl().getHost(), getUrl().getPort())
 				.option(ChannelOption.SO_KEEPALIVE, true)
 				.option(ChannelOption.SO_BACKLOG, 1024)
 				.channel(NioSocketChannel.class)

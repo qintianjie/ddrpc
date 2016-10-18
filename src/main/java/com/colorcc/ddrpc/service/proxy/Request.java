@@ -2,7 +2,7 @@ package com.colorcc.ddrpc.service.proxy;
 
 import java.util.Map;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public interface Request {
 
@@ -18,6 +18,6 @@ public interface Request {
 
 	public Map<String, Object> getAttachments();
 
-	public URI getUri();
+	public URL getUrl();
 
 }

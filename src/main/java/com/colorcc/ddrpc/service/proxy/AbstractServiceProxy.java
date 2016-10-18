@@ -1,14 +1,14 @@
 package com.colorcc.ddrpc.service.proxy;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class AbstractServiceProxy<T> implements ServiceProxy<T> {
 	private final Class<T> ifs;
-	private final URI uri;
+	private final URL url;
 	
-	public AbstractServiceProxy(Class<T> ifs, URI uri) {
+	public AbstractServiceProxy(Class<T> ifs, URL url) {
 		this.ifs = ifs;
-		this.uri = uri;
+		this.url = url;
 	}
 
 	@Override
@@ -16,9 +16,10 @@ public class AbstractServiceProxy<T> implements ServiceProxy<T> {
 		return ifs;
 	}
 
-	@Override
-	public URI getUri() {
-		return uri;
+	public URL getUrl() {
+		return url;
 	}
+	
+	
 
 }

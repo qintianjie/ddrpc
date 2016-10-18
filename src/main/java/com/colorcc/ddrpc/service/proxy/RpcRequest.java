@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class RpcRequest implements Request {
 
@@ -19,15 +19,15 @@ public class RpcRequest implements Request {
 
 	private Map<String, Object> attachments;
 
-	private URI uri;
+	private URL url;
 
 	public RpcRequest() {
 
 	}
 
-	public RpcRequest(URI uri, Class<?> classInterface, String methodName, Class<?>[] parameterTypes, Object[] parameterValues) {
+	public RpcRequest(URL url, Class<?> classInterface, String methodName, Class<?>[] parameterTypes, Object[] parameterValues) {
 		this.id = UUID.randomUUID().toString();
-		this.uri = uri;
+		this.url = url;
 		this.methodName = methodName;
 		this.parameterTypes = parameterTypes;
 		this.parameterValues = parameterValues;
@@ -84,12 +84,12 @@ public class RpcRequest implements Request {
 		this.attachments = attachments;
 	}
 
-	public URI getUri() {
-		return uri;
+	public URL getUrl() {
+		return url;
 	}
 
-	public void setUri(URI uri) {
-		this.uri = uri;
+	public void setUrl(URL url) {
+		this.url = url;
 	}
 
 	public String toString() {

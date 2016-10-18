@@ -14,21 +14,21 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.net.InetSocketAddress;
 
-import com.colorcc.ddrpc.service.tools.URI;
+import com.colorcc.ddrpc.service.tools.URL;
 
 public class TransportServer<T> implements Transport {
 
-	private URI uri;
+	private URL url;
 	private Class<T> classType; 
 	private T impl;
 	
 
-	public URI getUri() {
-		return uri;
+	public URL getUrl() {
+		return url;
 	}
 
-	public TransportServer(URI uri, Class<T> classType, T impl) {
-		this.uri = uri;
+	public TransportServer(URL url, Class<T> classType, T impl) {
+		this.url = url;
 		this.classType = classType;
 		this.impl = impl;
 	}
@@ -56,7 +56,7 @@ public class TransportServer<T> implements Transport {
 			ServerBootstrap b = new ServerBootstrap();
 			b.group(parentGroup, childGroup)
 				.channel(NioServerSocketChannel.class)
-				.localAddress(new InetSocketAddress(getUri().getPort()))
+				.localAddress(new InetSocketAddress(getUrl().getPort()))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
