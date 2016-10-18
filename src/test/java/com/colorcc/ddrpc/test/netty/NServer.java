@@ -32,7 +32,7 @@ public class NServer {
 //									new RpcResponseEncoder(), 
 									new StringToByteEncoder(),  // out.2: String -> byte
 									new RpcResponseToStringEncoder(), // out.1: RpcResponse -> String
-									new ServerInHandler()); // in.3:  handler -> RpcResponse
+									new ServerInHandler()); // in.3: biz process  handler -> RpcResponse
 					}
 					
 				});

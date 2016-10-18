@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 public class NClient {
 	
@@ -26,8 +27,10 @@ public class NClient {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
-						.addLast(new StringDecoder(), new ClientInHandler(null));
-//						.addLast(new StringDecoder(), new ClientInHandler(null), new RpcRequestEncoder());
+						.addLast(new StringEncoder(),  // out.2 --> String  to byte
+								new RpcRequestToStringEncoder(),  // out.1 --> RpcRequest to string
+								new StringDecoder(),  // in.1  --> byte to string
+								new ClientInHandler(null)); // biz process, write request in channelActive
 					}
 					
 				});

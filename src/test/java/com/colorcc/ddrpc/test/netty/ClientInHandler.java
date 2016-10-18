@@ -1,12 +1,9 @@
 package com.colorcc.ddrpc.test.netty;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
 
-import java.nio.CharBuffer;
+import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
 import com.colorcc.ddrpc.test.meta.MethodMeta;
@@ -17,27 +14,17 @@ public class ClientInHandler extends ChannelInboundHandlerAdapter {
 	public ClientInHandler(MethodMeta obj) {
 		this.obj = obj;
 	}
-	
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		String str = "client connect to server and send data.";
-		if (obj != null) {
-			str = JSON.toJSONString(obj);
-		} 
-		
-		ByteBuf out = ByteBufUtil.encodeString(ctx.alloc(), CharBuffer.wrap(str), CharsetUtil.UTF_8);
-		ctx.writeAndFlush(out);
-		
-//		RpcRequest request = new RpcRequest();
-//		request.setId(UUID.randomUUID().toString());
-//		request.setMethodMeta(obj);
-//		ctx.write(request);
+		RpcRequest request = new RpcRequest();
+		request.setId(UUID.randomUUID().toString());
+		request.setMethodMeta(obj);
+		ctx.writeAndFlush(request);
 	}
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-//		RpcResponse resp = (RpcResponse)msg;
 		RpcResponse resp = (RpcResponse)JSON.parseObject((String) msg, RpcResponse.class);
 		System.out.println("client receive server: " + resp.getData());
 	}
