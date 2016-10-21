@@ -1,7 +1,6 @@
 package com.colorcc.ddrpc.pojo;
 
 import java.io.Serializable;
-import java.util.Map;
 
 
 public class MethodMeta implements Serializable {

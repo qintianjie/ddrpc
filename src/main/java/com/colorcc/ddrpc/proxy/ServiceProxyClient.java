@@ -1,11 +1,8 @@
 package com.colorcc.ddrpc.proxy;
 
-import io.netty.channel.ChannelHandler;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.UUID;
 
 import com.colorcc.ddrpc.pojo.MethodMeta;
 import com.colorcc.ddrpc.tools.URL;

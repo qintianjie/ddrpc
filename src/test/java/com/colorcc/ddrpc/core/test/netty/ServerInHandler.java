@@ -1,9 +1,9 @@
 package com.colorcc.ddrpc.core.test.netty;
 
-import java.util.UUID;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
 import com.colorcc.ddrpc.core.test.netty.pojo.RpcRequest;
@@ -21,6 +21,7 @@ public class ServerInHandler extends ChannelInboundHandlerAdapter {
 		resp.setData("server response for [" + JSON.toJSONString(request) + "]"); 
 		System.out.println("server send response: " + JSON.toJSONString(resp));
 		ctx.writeAndFlush(resp);
+		
 	}
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

@@ -1,5 +1,7 @@
 package com.colorcc.ddrpc.core.test.netty;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -37,7 +39,18 @@ public class ClientInHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("client received done.");
-		ctx.close();
+		ChannelFuture f = ctx.close();
+		f.addListener(new ChannelFutureListener(){
+
+			@Override
+			public void operationComplete(ChannelFuture future) throws Exception {
+				if (future.isSuccess()) {
+					System.out.println("success client read complete.");
+				}
+			}
+			
+		});
+		
 	}
 
 	@Override

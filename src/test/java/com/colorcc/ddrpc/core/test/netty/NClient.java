@@ -2,6 +2,7 @@ package com.colorcc.ddrpc.core.test.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -40,6 +41,16 @@ public class NClient {
 				});
 			
 			ChannelFuture f = b.connect().sync();
+			f.addListener(new ChannelFutureListener() {
+
+				@Override
+				public void operationComplete(ChannelFuture future) throws Exception {
+					if (future.isSuccess()) {
+						System.out.println("success after connect");
+					}
+				}
+				
+			});
 			f.channel().closeFuture().sync();
 		} finally {
 			group.shutdownGracefully();
