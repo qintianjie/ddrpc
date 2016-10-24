@@ -36,7 +36,7 @@ public class ServiceProxyClient<T> extends AbstractServiceProxy<T> {
 				ClientCallback<RpcResponse> callback = new ClientCallbackImpl<>();
 				RpcRequest request = new RpcRequest(methodMeta, args, null);
 				RpcClientInHandler<RpcResponse> handler = new RpcClientInHandler<>(request, callback);
-				NettyClient client = new NettyClient(handler);
+				NettyClient client = new NettyClient();
 				client.init();
 				getClient().request(request);
 				Object result = callback.getResult();

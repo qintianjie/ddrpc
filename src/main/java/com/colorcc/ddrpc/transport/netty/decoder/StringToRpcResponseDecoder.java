@@ -6,7 +6,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.colorcc.ddrpc.core.test.netty.pojo.RpcResponse;
+import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
 public class StringToRpcResponseDecoder extends MessageToMessageDecoder<String> {
 

@@ -1,6 +1,7 @@
 package com.colorcc.ddrpc.transport.netty.pojo;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,12 +50,34 @@ public class RpcRequest implements Serializable {
 	}
 
 	public Map<String, String> getAttachments() {
+		if (attachments == null) {
+			attachments = new HashMap<>();
+		}
 		return attachments;
 	}
 
 	public void setAttachments(Map<String, String> attachments) {
-		this.attachments = attachments;
+		if (attachments == null) {
+			this.attachments = new HashMap<> ();
+		} else {
+			this.attachments = attachments;
+		}
 	}
+	
+	public String getAttachmentItem(String key) {
+		if (this.attachments == null) {
+			return null;
+		} else {
+			return this.attachments.get(key);
+		}
+	}
+	
+	public void setAttachmentItem(String key, String value) {
+		if (this.attachments == null) {
+			this.attachments = new HashMap<>();
+		}
+		this.getAttachments().put(key, value);
+	} 
 	
 	
 

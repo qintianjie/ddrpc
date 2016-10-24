@@ -1,9 +1,10 @@
 package com.colorcc.ddrpc.transport.netty;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -11,9 +12,13 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.util.UUID;
+
+import com.colorcc.ddrpc.transport.netty.callback.ClientCallback;
+import com.colorcc.ddrpc.transport.netty.callback.ClientCallbackImpl;
 import com.colorcc.ddrpc.transport.netty.decoder.StringToRpcResponseDecoder;
 import com.colorcc.ddrpc.transport.netty.encoder.RpcRequestToStringEncoder;
-import com.colorcc.ddrpc.transport.netty.handler.RpcClientInHandler;
+import com.colorcc.ddrpc.transport.netty.handler.BizChannelHandler;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcRequest;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
@@ -30,11 +35,13 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
  */
 public class NettyClient {
 
-//	private Class<?> type;
 	private Bootstrap bootstrap;
-	private RpcClientInHandler<RpcResponse> handler;
+	private BizChannelHandler handler;
+	private Channel channel;
+	private EventLoopGroup group;
+	private ClientCallback<RpcResponse> callback;
 
-	public RpcClientInHandler<RpcResponse> getHandler() {
+	public BizChannelHandler getHandler() {
 		return handler;
 	}
 
@@ -42,47 +49,45 @@ public class NettyClient {
 		return bootstrap;
 	}
 	
-	public NettyClient(RpcClientInHandler<RpcResponse> handler) {
-//		this.type = type;
-		this.handler = handler;
+	public NettyClient() {
+		this.bootstrap = new Bootstrap();
+		this.group = new NioEventLoopGroup();
+		this.callback = new ClientCallbackImpl<>();
+		this.handler = new BizChannelHandler(callback);
 		init();
 	}
 
 	public void init() {
-		bootstrap.channel(NioSocketChannel.class).remoteAddress("127.0.0.1", 9088).option(ChannelOption.SO_BACKLOG, 1024).handler(new ChannelInitializer<SocketChannel>() {
-			@Override
-			protected void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline()
-				// connect 建立连接,调用  channelActive 发送消息,其步骤为:
-				// 1. client.connect()
-				// 2. ClientInHandler.channelActive  
-			    //       do work
-				//       fireChanelActive()  ---> RpcClientInHandler
-				// 3. RpcClientInHandler.channelActive
-				// 		 	RpcRequest -->  JSONString  --> ByteBuf
-				//          ctx.write(ByteBuf.data1)
-				//       do ClientInHandler next work.
-				//       ctx.writeAndFlush(ByteBuf.data2)
-				// 最终数据   ByteBuf.data1+ByteBuf.data2
-				
-				//  接受 server response 时
-				//  StringDecoder --> 将 ByteBuf --> String
-				//  StringToRpcRequestDecoder --> 将 String --> RpcRequest
-				//  ClientInHandler --> 对 RpcRequest 处理 , 可以进行 ctx.flush(); 返回
-				//  RpcClientInHandler --> 如果需要,继续对 ClientInHandler 进行处理
-//				.addLast(new StringDecoder(), 
-//						 new StringToRpcResponseDecoder(), 
-//						 new StringEncoder(), // String -> byte
-//						 new RpcRequestToStringEncoder(),
-//						 new RpcClientInHandler<RpcResponse>(getRpcRequest(), getCallback()));
-				.addLast(new StringDecoder(), 
-						 new StringToRpcResponseDecoder(), 
-						 new StringEncoder(), // String -> byte
-						 new RpcRequestToStringEncoder(),
-						 handler);
-			}
-
+		bootstrap = bootstrap
+			.group(group)
+			.channel(NioSocketChannel.class)
+			.remoteAddress("127.0.0.1", 9088)
+//			.option(ChannelOption.SO_BACKLOG, 1024)
+			.handler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				protected void initChannel(SocketChannel ch) throws Exception {
+					ch.pipeline()
+					.addLast(new StringDecoder(), 
+							 new StringToRpcResponseDecoder(), 
+							 new StringEncoder(), // String -> byte
+							 new RpcRequestToStringEncoder(),
+							 handler);
+				}
 		});
+	}
+	
+	public void close() {
+		try {
+			if (channel != null) {
+				channel.closeFuture().sync();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			if (group != null) {
+				group.shutdownGracefully();
+			}
+		}
 	}
 	
 	/**
@@ -91,32 +96,35 @@ public class NettyClient {
 	 * @param paramValues 请求参数 
 	 * @return
 	 */
-	public void request(RpcRequest request) {
-		EventLoopGroup group = new NioEventLoopGroup();
+	public void request(final RpcRequest request) {
 		try {
-//			this.getBootstrap().group(group).connect().channel()
-			ChannelFuture f = this.getBootstrap().group(group).connect().sync();
-//			// 根据 channelRead 处理 reslt
-//			f.addListener(new ChannelFutureListener() {
-//				@Override
-//				public void operationComplete(ChannelFuture future) throws Exception {
-//					if (future.isSuccess()) {
-//						callback.processResponse(t);
-//					} else {
-//						// log it
-//					}
-//				}
-//			});
-			f.channel().closeFuture().sync();
+			this.getBootstrap().connect().addListener(new ChannelFutureListener() {
+				@Override
+				public void operationComplete(ChannelFuture future) throws Exception {
+					System.out.println("connect complete");
+					channel = future.channel();
+					System.out.println("connect request");
+					channel.writeAndFlush(request);
+				}
+			}).sync();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} finally {
-			group.shutdownGracefully();
 		}
 	}
 	
 	public Object getResult() {
-		return this.getHandler().getCallback().getResult();
+		RpcResponse result = this.getHandler().getCallback().getResult();
+		close();
+		return result;
+	}
+	
+	public static void main(String[] args) throws InterruptedException {
+		NettyClient client = new NettyClient();
+		
+		RpcRequest request = new RpcRequest();
+		request.setId(UUID.randomUUID().toString());
+		request.setMethodMeta(null);
+		client.request(request);
 	}
 
 }

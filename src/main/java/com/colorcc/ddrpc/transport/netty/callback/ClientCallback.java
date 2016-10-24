@@ -1,11 +1,11 @@
 package com.colorcc.ddrpc.transport.netty.callback;
 
-public interface ClientCallback<T> {
+
+public interface ClientCallback<T> { 
+	public ClientCallback<T> filter(T respone);
 	
-	public void callback(T t);
+	public void processResponse(T response);
 	
-	public void processResponse(T t);
-	
-	public Object getResult();
+	public T getResult();
 
 }
