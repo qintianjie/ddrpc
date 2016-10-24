@@ -2,7 +2,7 @@ package com.colorcc.ddrpc.proxy;
 
 import com.colorcc.ddrpc.tools.URL;
 
-public class AbstractServiceProxy<T> implements ServiceProxy<T> {
+public abstract class AbstractServiceProxy<T> implements ServiceProxy<T> {
 	private final Class<T> ifs;
 	private final URL url;
 	
@@ -19,7 +19,4 @@ public class AbstractServiceProxy<T> implements ServiceProxy<T> {
 	public URL getUrl() {
 		return url;
 	}
-	
-	
-
 }

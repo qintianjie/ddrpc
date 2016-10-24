@@ -16,7 +16,7 @@ public class RpcRequest implements Serializable {
 
 	public RpcRequest() {
 
-	}
+	} 
 
 	public RpcRequest(MethodMeta methodMeta, Object[] paramValues, Map<String, String>  attachments) {
 		this.id = UUID.randomUUID().toString();

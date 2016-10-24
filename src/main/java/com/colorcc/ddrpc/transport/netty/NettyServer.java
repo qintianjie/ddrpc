@@ -11,11 +11,15 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
 
 import com.colorcc.ddrpc.transport.netty.decoder.StringToRpcRequestDecoder;
 import com.colorcc.ddrpc.transport.netty.encoder.RpcResponseToStringEncoder;
 import com.colorcc.ddrpc.transport.netty.encoder.StringToByteEncoder;
 import com.colorcc.ddrpc.transport.netty.handler.BizChannelHandler;
+import com.colorcc.ddrpc.transport.netty.handler.HeartbeatServerHandler;
 
 public class NettyServer {
 	private ServerBootstrap bootstrap;
@@ -50,10 +54,13 @@ public class NettyServer {
 			bootstrap.group(parentGroup, childGroup)
 				.localAddress("127.0.0.1", 9088)
 				.option(ChannelOption.SO_BACKLOG, 1024)
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
+						.addLast(new IdleStateHandler(4,5,7, TimeUnit.SECONDS))
+						.addLast(new HeartbeatServerHandler())
 						.addLast(new StringDecoder(),  //in.1:  byte -> String
 								new StringToRpcRequestDecoder(), //in.2:  String -> RpcRequest
 								new StringToByteEncoder(),  // out.2: String -> byte

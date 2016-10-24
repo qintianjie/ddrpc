@@ -1,17 +1,17 @@
 package com.colorcc.ddrpc.proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 import com.colorcc.ddrpc.others.Client;
-import com.colorcc.ddrpc.others.Request;
-import com.colorcc.ddrpc.others.Response;
-import com.colorcc.ddrpc.others.RpcRequest;
 import com.colorcc.ddrpc.pojo.MethodCache;
+import com.colorcc.ddrpc.pojo.MethodMeta;
 import com.colorcc.ddrpc.tools.URL;
+import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
 
 public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
-	private Client client;
 	private T impl;
 	
 	public T getImpl() {
@@ -21,24 +21,23 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 	public ServiceProxyServer(Class<T> ifs, URL url, T impl, Client client) {
 		super(ifs, url);
 		this.impl = impl;
-		this.client = client;
 		
 		MethodCache.registerMethod(ifs, impl);
-	}
+	} 
 	
-	public Response invoke(Request request) {
-		RpcRequest rpcRequest = (RpcRequest) request;
-		Method method = MethodCache.getMethod(this.getInterface(), rpcRequest.getMethodName());
-		
-		
-		Response response = new Response();
-		try {
-			Object returnValue = method.invoke(getImpl(), request.getParameterValues());
-			response.setResult(returnValue);
-		} catch (Exception e) {
-			response.setResult(null);
+	@Override
+	public RpcResponse invoke(MethodMeta methodMeta, Object[] args) {
+        Method m = MethodCache.getMethod(getInterface(), methodMeta.getMethodName());
+        Object returnValue = null;
+        try {
+			returnValue = m.invoke(impl, args);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
 		}
-		
+        
+        RpcResponse response = new RpcResponse();
+        response.setId(UUID.randomUUID().toString());
+        response.setData(returnValue);
 		return response;
 	}
 	
