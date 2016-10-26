@@ -55,7 +55,7 @@ public class NettyClient {
 	
 	public NettyClient() {
 		this.bootstrap = new Bootstrap();
-		this.group = new NioEventLoopGroup();
+		this.group = new NioEventLoopGroup(5);
 		this.callback = new ClientCallbackImpl<>();
 		this.handler = new BizChannelHandler(callback);
 		init();
@@ -74,11 +74,11 @@ public class NettyClient {
 					ch.pipeline()
 					.addLast(new IdleStateHandler(4,5,7, TimeUnit.SECONDS))
 						.addLast(new HeartbeatServerHandler())
-					.addLast(new StringDecoder(), 
+						.addLast(new StringDecoder(), 
 							 new StringToRpcResponseDecoder(), 
 							 new StringEncoder(), // String -> byte
-							 new RpcRequestToStringEncoder(),
-							 handler);
+							 new RpcRequestToStringEncoder())
+						.addLast("bizHandler", handler);
 				}
 		});
 	}
@@ -114,6 +114,7 @@ public class NettyClient {
 					channel.writeAndFlush(request);
 				}
 			}).sync();
+			channel.closeFuture().sync();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

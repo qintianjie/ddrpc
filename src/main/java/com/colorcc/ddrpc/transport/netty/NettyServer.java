@@ -11,6 +11,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
@@ -45,8 +47,8 @@ public class NettyServer {
 
 	public NettyServer() {
 		bootstrap = new ServerBootstrap();
-		parentGroup = new NioEventLoopGroup();
-		childGroup = new NioEventLoopGroup();
+		parentGroup = new NioEventLoopGroup(4);
+		childGroup = new NioEventLoopGroup(16);
 	}
 	
 	public void start() {
@@ -55,6 +57,7 @@ public class NettyServer {
 				.localAddress("127.0.0.1", 9088)
 				.option(ChannelOption.SO_BACKLOG, 1024)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+				.handler(new LoggingHandler(LogLevel.INFO))
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
@@ -64,8 +67,8 @@ public class NettyServer {
 						.addLast(new StringDecoder(),  //in.1:  byte -> String
 								new StringToRpcRequestDecoder(), //in.2:  String -> RpcRequest
 								new StringToByteEncoder(),  // out.2: String -> byte
-								new RpcResponseToStringEncoder(), // out.1: RpcResponse -> String
-								new BizChannelHandler(null)); // in.3: biz process  handler -> RpcResponse
+								new RpcResponseToStringEncoder()) // out.1: RpcResponse -> String
+						.addLast(new BizChannelHandler(null)); // in.3: biz process  handler -> RpcResponse
 					}
 					
 				}).channel(NioServerSocketChannel.class);

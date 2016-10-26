@@ -1,6 +1,7 @@
 package com.colorcc.ddrpc.transport.netty.handler;
 
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
@@ -18,28 +19,6 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 	public BizChannelHandler(ClientCallback<RpcResponse> callback) {
 		this.callback = callback;
 	}
-	
-	
-	
-//
-//	@Override
-//	public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) throws Exception {
-//		// TODO Auto-generated method stub
-//		super.bind(ctx, localAddress, promise);
-//	}
-//
-//	@Override
-//	public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) throws Exception {
-//		// TODO Auto-generated method stub
-//		super.connect(ctx, remoteAddress, localAddress, promise);
-//	}
-//
-//	@Override
-//	public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-//		// TODO Auto-generated method stub
-//		super.disconnect(ctx, promise);
-//	}
-	
 	
 
 	public ClientCallback<RpcResponse> getCallback() {
@@ -65,6 +44,8 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 			this.getCallback().processResponse(response);
 			RpcResponse result = this.getCallback().getResult();
 			System.out.println(JSON.toJSONString(result));
+			ctx.channel().disconnect();
+//			ctx.channel().closeFuture().sync();
 		} else {
 			System.out.println(JSON.toJSONString(msg));
 		}
@@ -79,7 +60,7 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 		} else if (msg instanceof RpcResponse) {
 			RpcResponse response = (RpcResponse) msg;
 			response.setAttachmentItem("key", "SERVER_RESPONSE_WRITE");
-			ctx.writeAndFlush(response);
+			ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			ctx.writeAndFlush(msg);
 		}
