@@ -25,11 +25,12 @@
 Update Logs
 ----
 <b>20161026</b>  
-	Netty sample 完善,见 test package
-	RPC实现流程思考:
-	Client端 根据 service --生成--> proxyImpl
-	Server端 根据 service --找到--> serviceImpl
-	统一封装 client / server 的 Impl 到 一个新的 proxy, 这个 proxy 可以实现 loadbalance, monitor... 等功能.
+	Netty sample 完善,见 test package 
+	 
+	RPC实现流程思考:  
+	Client端 根据 service --生成--> proxyImpl   
+	Server端 根据 service --找到--> serviceImpl  
+	统一封装 client / server 的 Impl 到 一个新的 proxy, 这个 proxy 可以实现 loadbalance, monitor... 等功能.  
 	
 	
 <b>20161019</b>  
