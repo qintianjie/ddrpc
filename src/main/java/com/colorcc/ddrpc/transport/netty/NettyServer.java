@@ -24,6 +24,7 @@ import com.colorcc.ddrpc.transport.netty.handler.BizChannelHandler;
 import com.colorcc.ddrpc.transport.netty.handler.HeartbeatServerHandler;
 
 public class NettyServer {
+
 	private ServerBootstrap bootstrap;
 	private EventLoopGroup parentGroup;
 	private EventLoopGroup childGroup;
@@ -50,11 +51,13 @@ public class NettyServer {
 		parentGroup = new NioEventLoopGroup(4);
 		childGroup = new NioEventLoopGroup(16);
 	}
-	
+
 	public void start() {
-		try {			
+		try {
+			//@formatter:off
 			bootstrap.group(parentGroup, childGroup)
 				.localAddress("127.0.0.1", 9088)
+				.option(ChannelOption.TCP_NODELAY, true)
 				.option(ChannelOption.SO_BACKLOG, 1024)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
 				.handler(new LoggingHandler(LogLevel.INFO))
@@ -72,26 +75,20 @@ public class NettyServer {
 					}
 					
 				}).channel(NioServerSocketChannel.class);
-			
+			// @formatter:on
 			ChannelFuture f = bootstrap.bind().addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
-					channel = future.channel();
-					System.out.println("server started.");
+					if (future.isSuccess()) {
+						channel = future.channel();
+						System.out.println("server started.");
+					} else {
+						future.channel().close();
+						System.out.println("server start failed.");
+					}
 				}
 			}).sync();
 			f.channel().closeFuture().sync();
-		}catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			childGroup.shutdownGracefully();
-			parentGroup.shutdownGracefully();
-		}
-	}
-
-	public void close() {
-		try {
-			this.getChannel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
@@ -99,40 +96,10 @@ public class NettyServer {
 			parentGroup.shutdownGracefully();
 		}
 	}
-	
-	public static void main(String[] args) throws InterruptedException {
+
+	public static void main(String[] args) {
 		NettyServer server = new NettyServer();
 		server.start();
 	}
-
-	// public static void main(String[] args) throws InterruptedException {
-	// EventLoopGroup parentGroup = new NioEventLoopGroup();
-	// EventLoopGroup childGroup = new NioEventLoopGroup();
-	// try {
-	// ServerBootstrap b = new ServerBootstrap();
-	//
-	// b.group(parentGroup, childGroup).channel(NioServerSocketChannel.class)
-	// .localAddress("127.0.0.1", 9088)
-	// .option(ChannelOption.SO_BACKLOG, 1024)
-	// .childHandler(new ChannelInitializer<SocketChannel>() {
-	// @Override
-	// protected void initChannel(SocketChannel ch) throws Exception {
-	// // ch.pipeline()
-	// // .addLast(new StringDecoder(), new ServerInHandler());
-	// ch.pipeline()
-	// .addLast(new StringDecoder(), new RpcResponseEncoder(), new
-	// ServerInHandler());
-	// }
-	//
-	// });
-	//
-	// ChannelFuture f = b.bind().sync();
-	// System.out.println("server started.");
-	// f.channel().closeFuture().sync();
-	// } finally {
-	// childGroup.shutdownGracefully();
-	// parentGroup.shutdownGracefully();
-	// }
-	// }
 
 }
