@@ -26,7 +26,6 @@ Update Logs
 ----
 <b>20161026</b>  
 	Netty sample 完善,见 test package 
-	 
 	RPC实现流程思考:  
 	Client端 根据 service --生成--> proxyImpl   
 	Server端 根据 service --找到--> serviceImpl  
