@@ -1,6 +1,5 @@
 package com.colorcc.ddrpc.proxy;
 
-import com.colorcc.ddrpc.pojo.MethodMeta;
 import com.colorcc.ddrpc.tools.URL;
 import com.colorcc.ddrpc.transport.netty.NettyClient;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcRequest;
@@ -18,12 +17,18 @@ public class ServiceProxyClient<T> extends AbstractServiceProxy<T> {
 		super(ifs, url);
 		this.client = client;
 	}
-
+	
 	@Override
-	public RpcResponse invoke(MethodMeta methodMeta, Object[] args) {
-		RpcRequest request = new RpcRequest(methodMeta, args, null);
+	public RpcResponse invoke(RpcRequest request) {
 		client.request(request);
 		return client.getResult();
 	} 
+
+//	@Override
+//	public RpcResponse invoke(MethodMeta methodMeta, Object[] args) {
+//		RpcRequest request = new RpcRequest(methodMeta, args, null);
+//		client.request(request);
+//		return client.getResult();
+//	} 
 
 }

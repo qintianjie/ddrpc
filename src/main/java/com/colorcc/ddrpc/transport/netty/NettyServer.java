@@ -65,7 +65,7 @@ public class NettyServer {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
-						.addLast(new IdleStateHandler(4,5,7, TimeUnit.SECONDS))
+						.addLast(new IdleStateHandler(40,50,70, TimeUnit.SECONDS))
 						.addLast(new HeartbeatServerHandler())
 						.addLast(new StringDecoder(),  //in.1:  byte -> String
 								new StringToRpcRequestDecoder(), //in.2:  String -> RpcRequest

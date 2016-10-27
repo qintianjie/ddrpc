@@ -73,7 +73,7 @@ public class NettyClient {
 				@Override
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ch.pipeline()
-						.addLast(new IdleStateHandler(4,5,7, TimeUnit.SECONDS))
+						.addLast(new IdleStateHandler(40,50,70, TimeUnit.SECONDS))
 						.addLast(new HeartbeatServerHandler())
 						.addLast(new StringDecoder(), 
 							 new StringToRpcResponseDecoder(), 
@@ -95,6 +95,8 @@ public class NettyClient {
 						channel.writeAndFlush(request);
 					} else {
 						// log it
+						Throwable cause = f.cause();
+						System.out.println("error: " + cause);
 					}
 				}
 			});

@@ -15,6 +15,9 @@ public class MethodMeta implements Serializable {
 //
 //    private Map<String, String>  attachments;
     
+    public MethodMeta() {
+    	
+    }
     
     public MethodMeta(String methodName, Class<?>[] parameterTypes) {
         this.methodName = methodName;
