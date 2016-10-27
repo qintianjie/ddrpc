@@ -38,8 +38,7 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 			resp.setData(request);
 			resp.setAttachmentItem("KEY_RESP", "SERVER_RESPONSE_READ");
 			ctx.writeAndFlush(resp);
-		} else if (msg instanceof RpcResponse) { // client reveive the response,
-													// process the result
+		} else if (msg instanceof RpcResponse) { // client reveive the response, process the result
 			RpcResponse response = (RpcResponse) msg;
 
 			this.getCallback().processResponse(response);
