@@ -13,39 +13,39 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcRequest;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
 public class BizChannelHandler extends ChannelDuplexHandler {
-	
+
 	private ClientCallback<RpcResponse> callback;
-	
+
 	public BizChannelHandler(ClientCallback<RpcResponse> callback) {
 		this.callback = callback;
 	}
-	
 
 	public ClientCallback<RpcResponse> getCallback() {
 		return callback;
 	}
-
-
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 		System.out.println("read: " + JSON.toJSONString(msg));
 		if (msg instanceof RpcRequest) { // server receive the request, process request - > response
 			RpcRequest request = (RpcRequest) msg;
-			
+			// do biz process
+			// 1. get methodName & paramTypes & paramValues
+			// 2. use one get method from repository
+			// 3. process the result
 			RpcResponse resp = new RpcResponse();
 			resp.setId(UUID.randomUUID().toString());
-			resp.setData(request); 
+			resp.setData(request);
 			resp.setAttachmentItem("KEY_RESP", "SERVER_RESPONSE_READ");
 			ctx.writeAndFlush(resp);
-		} else if (msg instanceof RpcResponse) { // client reveive the response, process the result
+		} else if (msg instanceof RpcResponse) { // client reveive the response,
+													// process the result
 			RpcResponse response = (RpcResponse) msg;
-			
+
 			this.getCallback().processResponse(response);
-			RpcResponse result = this.getCallback().getResult();
-			System.out.println(JSON.toJSONString(result));
+			// RpcResponse result = this.getCallback().getResult();
+			// System.out.println(JSON.toJSONString(result));
 			ctx.channel().disconnect();
-//			ctx.channel().closeFuture().sync();
 		} else {
 			System.out.println(JSON.toJSONString(msg));
 		}
@@ -65,26 +65,15 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 			ctx.writeAndFlush(msg);
 		}
 	}
-	
-	
-	
-	
-	
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		cause.printStackTrace();
 	}
-
-
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		System.out.println("userEventTriggered ");
 		super.userEventTriggered(ctx, evt);
 	}
-
-//	public void send(MethodMeta metod, Object[] args) {
-//		
-//	}
-
 }
