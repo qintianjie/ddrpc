@@ -5,6 +5,5 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
 public interface ServiceProxy<T> {
 	Class<T> getInterface();
-//	RpcResponse invoke(MethodMeta methodMeta, Object[] args);
 	RpcResponse invoke(RpcRequest request);
 }
