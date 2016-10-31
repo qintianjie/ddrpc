@@ -2,7 +2,6 @@ package com.colorcc.ddrpc.core.test.javassist;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,22 +13,19 @@ import javassist.CtField;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
-import com.colorcc.sample.service.SampleService;
-import com.colorcc.sample.service.impl.SampleServiceImpl;
-
 
 public  class JavassistProxy {
 	
 	private static final AtomicLong PROXY_CLASS_COUNTER = new AtomicLong(0);
 	
-	public static void main(String[] args) {
-		JavassistProxy proxy = new JavassistProxy();
-		SampleService sample = new SampleServiceImpl();
-		JavassistInvocationHandler handler = new JavassistInvocationHandler(sample);
-//		proxy.getProxy(infs)
-		
-		
-	}
+//	public static void main(String[] args) {
+//		JavassistProxy proxy = new JavassistProxy();
+//		SampleService sample = new SampleServiceImpl();
+//		JavassistInvocationHandler handler = new JavassistInvocationHandler(sample);
+////		proxy.getProxy(infs)
+//		
+//		
+//	}
 	
 	
 	public JavassistProxy getProxy(Class<?> infs, Object impl) throws CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -59,19 +55,19 @@ public  class JavassistProxy {
 		cc.addConstructor(cons);
 
 		// a method to process interface method
-		for (Method method : infs.getMethods()) {
-			
-		}
+//		for (Method method : infs.getMethods()) {
+//			
+//		}
 		
 //		CtMethod cmSay = CtNewMethod.make("public void say() {System.out.println(\"Hello, my name is name = \" + this.name);}", cc);
 //		cc.addMethod(cmSay);
 		
 		Class<?> implClass = cc.toClass();
 		System.out.println("class name: " + implClass.getName());
-		Object obj = implClass.newInstance(); 
+//		Object obj = implClass.newInstance(); 
 		
 		
-		return obj;
+		return null;
 	}
 	
 	
