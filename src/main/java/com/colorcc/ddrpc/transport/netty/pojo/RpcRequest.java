@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import com.colorcc.ddrpc.pojo.MethodMeta;
+import com.colorcc.ddrpc.common.pojo.MethodMeta;
 
 public class RpcRequest implements Serializable {
 	private static final long serialVersionUID = -8441351841109201058L;
