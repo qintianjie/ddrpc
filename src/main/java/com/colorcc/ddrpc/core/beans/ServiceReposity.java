@@ -8,7 +8,9 @@ import org.springframework.context.ApplicationContext;
 
 import com.colorcc.ddrpc.core.annotation.DdrpcService;
 import com.colorcc.ddrpc.core.define.DdrpcException;
-import com.colorcc.ddrpc.core.proxy.DdrpcProxyFactory;
+import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
+import com.colorcc.ddrpc.core.proxy.ProxyFactory;
+import com.colorcc.ddrpc.core.proxy.ServiceProxy;
 
 /**
  * Service Reposity，即 Service 对象的 cache 每个 Service 在 bean define 阶段，其
@@ -21,19 +23,17 @@ import com.colorcc.ddrpc.core.proxy.DdrpcProxyFactory;
  */
 public class ServiceReposity {
 
-	private final Map<Class<?>, DdrpcProxyFactory<?>> knownMappers = new HashMap<>();
+	private final Map<Class<?>, Object> knownMappers = new HashMap<>();
+	private final Map<Class<?>, ServiceProxy<?>> serviceProxyMappers = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	public <T> T getMapper(Class<T> type, ContainerHook ddrpcFactoryBean) throws Exception {
-		final DdrpcProxyFactory<T> mapperProxyFactory = (DdrpcProxyFactory<T>) knownMappers.get(type);
-		if (mapperProxyFactory == null) {
+		T obj = (T) knownMappers.get(type);
+		if (obj == null) {
 			addMapper(type, ddrpcFactoryBean);
+			obj = (T) knownMappers.get(type);
 		}
-		try {
-			return mapperProxyFactory.newInstance();
-		} catch (Exception e) {
-			throw new Exception("Error getting mapper instance. Cause: " + e, e);
-		}
+		return obj;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,7 +66,17 @@ public class ServiceReposity {
 						obj = (T) applicationContext.getBean(ibn);
 					}
 					if (obj != null) {
-						knownMappers.put(type, new DdrpcProxyFactory<T>(type, obj));
+//						knownMappers.put(type, new DdrpcProxyFactory<T>(type, obj));
+						// export to mentod repository
+						knownMappers.put(type, obj);
+						try {
+							ProxyFactory factory = new JdkProxyFactory();
+							ServiceProxy<T> proxy = factory.getProxy(obj, type, null);
+							serviceProxyMappers.put(type, proxy); 
+							// open the server
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					} else {
 						throw new DdrpcException("Service [" + type + "] haven't impl object (beanName is: [" + ibn + "]).");
 					}
