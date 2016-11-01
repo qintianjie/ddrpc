@@ -17,6 +17,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.concurrent.TimeUnit;
 
+import com.colorcc.ddrpc.common.tools.URL;
 import com.colorcc.ddrpc.transport.netty.decoder.StringToRpcRequestDecoder;
 import com.colorcc.ddrpc.transport.netty.encoder.RpcResponseToStringEncoder;
 import com.colorcc.ddrpc.transport.netty.encoder.StringToByteEncoder;
@@ -29,6 +30,17 @@ public class NettyServer {
 	private EventLoopGroup parentGroup;
 	private EventLoopGroup childGroup;
 	private Channel channel;
+	private String hostname;
+	private int port;
+	
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
 
 	public ServerBootstrap getBootstrap() {
 		return bootstrap;
@@ -50,13 +62,31 @@ public class NettyServer {
 		bootstrap = new ServerBootstrap();
 		parentGroup = new NioEventLoopGroup(4);
 		childGroup = new NioEventLoopGroup(16);
+		this.hostname = "127.0.0.1";
+		this.port = 9088;
+	}
+	
+	public NettyServer(URL url) {
+		bootstrap = new ServerBootstrap();
+		parentGroup = new NioEventLoopGroup(4);
+		childGroup = new NioEventLoopGroup(16);
+		this.hostname = url.getHost();
+		this.port = url.getPort();
+	}
+	
+	public NettyServer(String hostname, int port) {
+		bootstrap = new ServerBootstrap();
+		parentGroup = new NioEventLoopGroup(4);
+		childGroup = new NioEventLoopGroup(16);
+		this.hostname = hostname;
+		this.port = port;
 	}
 
 	public void start() {
 		try {
 			//@formatter:off
 			bootstrap.group(parentGroup, childGroup)
-				.localAddress("127.0.0.1", 9088)
+				.localAddress(this.getHostname(), this.port)
 				.option(ChannelOption.TCP_NODELAY, true)
 				.option(ChannelOption.SO_BACKLOG, 1024)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)

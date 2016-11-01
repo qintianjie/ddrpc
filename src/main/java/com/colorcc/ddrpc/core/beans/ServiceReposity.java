@@ -2,15 +2,20 @@ package com.colorcc.ddrpc.core.beans;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
+import com.colorcc.ddrpc.common.tools.URL;
 import com.colorcc.ddrpc.core.annotation.DdrpcService;
 import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ServiceProxy;
+import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
  * Service Reposity，即 Service 对象的 cache 每个 Service 在 bean define 阶段，其
@@ -23,8 +28,10 @@ import com.colorcc.ddrpc.core.proxy.ServiceProxy;
  */
 public class ServiceReposity {
 
-	private final Map<Class<?>, Object> knownMappers = new HashMap<>();
-	private final Map<Class<?>, ServiceProxy<?>> serviceProxyMappers = new HashMap<>();
+	public static final Map<Class<?>, Object> knownMappers = new HashMap<>();
+	public static final Map<Class<?>, ServiceProxy<?>> serviceProxyMappers = new HashMap<>();
+	public static final Map<String, NettyServer> serverMap = new HashMap<>(); 
+	private final Lock lock = new ReentrantLock();
 
 	@SuppressWarnings("unchecked")
 	public <T> T getMapper(Class<T> type, ContainerHook ddrpcFactoryBean) throws Exception {
@@ -66,14 +73,41 @@ public class ServiceReposity {
 						obj = (T) applicationContext.getBean(ibn);
 					}
 					if (obj != null) {
-//						knownMappers.put(type, new DdrpcProxyFactory<T>(type, obj));
-						// export to mentod repository
 						knownMappers.put(type, obj);
 						try {
 							ProxyFactory factory = new JdkProxyFactory();
-							ServiceProxy<T> proxy = factory.getProxy(obj, type, null);
+							final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
+								.param("service", type.getName())
+								.param("uid", UUID.randomUUID().toString()).build();
+							System.out.println(" ==> service: " + url);
+							ServiceProxy<T> proxy = factory.getProxy(obj, type, url);
 							serviceProxyMappers.put(type, proxy); 
 							// open the server
+							final String key = url.getHost() + "_" + url.getPort();
+							if (!serverMap.containsKey(key)) {
+								lock.lock();
+								try {
+									if (!serverMap.containsKey(key)) {
+										System.out.println("=====> server init. " + type.getName());
+										serverMap.put(key, null); // 占位符，实际考虑同步机制
+										Thread t = new Thread(new Runnable() {
+											@Override
+											public void run() {
+												if(serverMap.containsKey(key)) {
+													NettyServer server = new NettyServer(url);
+													serverMap.put(key, server);
+													server.start();
+												}
+											}
+										});
+										t.start();
+									}
+								} finally {
+									lock.unlock();
+								}
+							} else {
+								System.out.println("=====> server has start. " + type.getName());
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
