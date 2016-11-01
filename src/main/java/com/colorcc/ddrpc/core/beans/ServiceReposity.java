@@ -6,11 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
-
 import com.colorcc.ddrpc.common.tools.URL;
-import com.colorcc.ddrpc.core.annotation.DdrpcService;
 import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
@@ -34,53 +30,52 @@ public class ServiceReposity {
 	private final Lock lock = new ReentrantLock();
 
 	@SuppressWarnings("unchecked")
-	public <T> T getMapper(Class<T> type, ContainerHook ddrpcFactoryBean) throws Exception {
+	public <T> T getMapper(Class<T> type, T impl, ContainerHook ddrpcFactoryBean) throws Exception {
 		T obj = (T) knownMappers.get(type);
 		if (obj == null) {
-			addMapper(type, ddrpcFactoryBean);
+			addMapper(type, impl, ddrpcFactoryBean);
 			obj = (T) knownMappers.get(type);
 		}
 		return obj;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> void addMapper(Class<T> type, ContainerHook ddrpcFactoryBean) throws DdrpcException {
+	public <T> void addMapper(Class<T> type, T impl, ContainerHook ddrpcFactoryBean) throws DdrpcException {
 		if (type.isInterface()) {
 			if (!knownMappers.containsKey(type)) {
 				boolean loadCompleted = false;
 				try {
-					String ibn = "";
-					// use it in java 8
-					// DdrpcService[] ddrpcAnno = type.getAnnotationsByType(DdrpcService.class);
-					// if (ArrayUtils.isNotEmpty(ddrpcAnno)) {
-					// 		ibn = ddrpcAnno[0].ibn();
-					// }
-
-					// use it in java 7
-					DdrpcService ddrpcAnno = type.getAnnotation(DdrpcService.class);
-					if (ddrpcAnno != null) {
-						ibn = ddrpcAnno.ibn();
-					}
-
-					if (StringUtils.isBlank(ibn)) {
-						String simpleName = type.getSimpleName();
-						Character c = simpleName.charAt(0);
-						ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
-					}
-					T obj = null;
-					if (StringUtils.isNoneBlank(ibn)) {
-						ApplicationContext applicationContext = ddrpcFactoryBean.getApplicationContext();
-						obj = (T) applicationContext.getBean(ibn);
-					}
-					if (obj != null) {
-						knownMappers.put(type, obj);
+//					String ibn = "";
+//					// use it in java 8
+//					// DdrpcService[] ddrpcAnno = type.getAnnotationsByType(DdrpcService.class);
+//					// if (ArrayUtils.isNotEmpty(ddrpcAnno)) {
+//					// 		ibn = ddrpcAnno[0].ibn();
+//					// }
+//
+//					// use it in java 7
+//					DdrpcService ddrpcAnno = type.getAnnotation(DdrpcService.class);
+//					if (ddrpcAnno != null) {
+//						ibn = ddrpcAnno.ibn();
+//					}
+//
+//					if (StringUtils.isBlank(ibn)) {
+//						String simpleName = type.getSimpleName();
+//						Character c = simpleName.charAt(0);
+//						ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
+//					}
+//					T obj = null;
+//					if (StringUtils.isNoneBlank(ibn)) {
+//						ApplicationContext applicationContext = ddrpcFactoryBean.getApplicationContext();
+//						obj = (T) applicationContext.getBean(ibn);
+//					}
+					if (impl != null) {
+						knownMappers.put(type, impl);
 						try {
 							ProxyFactory factory = new JdkProxyFactory();
 							final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
 								.param("service", type.getName())
 								.param("uid", UUID.randomUUID().toString()).build();
 							System.out.println(" ==> service: " + url);
-							ServiceProxy<T> proxy = factory.getProxy(obj, type, url);
+							ServiceProxy<T> proxy = factory.getProxy(impl, type, url);
 							serviceProxyMappers.put(type, proxy); 
 							// open the server
 							final String key = url.getHost() + "_" + url.getPort();
@@ -112,7 +107,7 @@ public class ServiceReposity {
 							e.printStackTrace();
 						}
 					} else {
-						throw new DdrpcException("Service [" + type + "] haven't impl object (beanName is: [" + ibn + "]).");
+						throw new DdrpcException("Service [" + type + "] haven't impl object (beanName is: [" + (impl != null ? impl.getClass().getName() : "") + "]).");
 					}
 					loadCompleted = true;
 				} finally {

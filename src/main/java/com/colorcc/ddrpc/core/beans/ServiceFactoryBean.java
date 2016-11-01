@@ -19,6 +19,17 @@ public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean {
 	private Class<T> mapperInterface;
 	private boolean addToConfig = true;
 	ServiceReposity reposity = new ServiceReposity();
+	private T impl;
+	
+	
+
+	public T getImpl() {
+		return impl;
+	}
+
+	public void setImpl(T impl) {
+		this.impl = impl;
+	}
 
 	/**
 	 * Spring container 工具，拿到 context 可做很多事
@@ -43,13 +54,13 @@ public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (!reposity.hasMapper(this.mapperInterface)) {
-			reposity.addMapper(this.mapperInterface, containerHook);
+			reposity.addMapper(this.mapperInterface, impl, containerHook);
 		}
 	}
 
 	@Override
 	public T getObject() throws Exception {
-		return reposity.getMapper(this.mapperInterface, containerHook);
+		return reposity.getMapper(this.mapperInterface, impl, containerHook);
 	}
 
 	@Override

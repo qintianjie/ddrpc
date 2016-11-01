@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -19,6 +20,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 
+import com.colorcc.ddrpc.core.annotation.DdrpcService;
 import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
 
 /**
@@ -184,8 +186,41 @@ public class DdrpcServiceClassPathScanner extends ClassPathBeanDefinitionScanner
 			// but, the actual class of the bean is MapperFactoryBean
 			definition.setAttribute("name", definition.getBeanClassName());
 			definition.getPropertyValues().add("mapperInterface", definition.getBeanClassName());
+			String ibn = "";
+			try {
+				Class<?> beanType = Class.forName(definition.getBeanClassName());
+				if (beanType != null) {
+					DdrpcService ddrpcAnno = beanType.getAnnotation(DdrpcService.class);
+					if (ddrpcAnno != null) {
+						ibn = ddrpcAnno.ibn();
+					}
+
+					if (StringUtils.isBlank(ibn)) {
+						String simpleName = beanType.getSimpleName();
+						Character c = simpleName.charAt(0);
+						ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
+					}
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			
 			definition.setBeanClass(this.serviceFactoryBean.getClass());
 			definition.getPropertyValues().add("addToConfig", this.addToConfig);
+			
+			
+//			System.out.println("==========> definition.getBeanClass() : " + definition.getBeanClass());
+////			definition.getMetadataAttribute()
+//			MutablePropertyValues kkss = definition.getPropertyValues();
+//			List<PropertyValue> propertyValueList = kkss.getPropertyValueList();
+//			for (PropertyValue pv : propertyValueList) {
+//				System.out.println("------------> " + pv.getName() + " : " + kkss.get(pv.getName()));
+//			}
+//			definition.getPropertyValues().add("impl", new BeanDefinitionHolder(definition, ibn));
+			if (StringUtils.isNotBlank(ibn)) {
+				definition.getPropertyValues().add("impl", new RuntimeBeanReference(ibn));
+			}
+			
 			boolean explicitFactoryUsed = false;
 			if (this.containerHook != null) {
 				if (explicitFactoryUsed) {

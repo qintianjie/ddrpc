@@ -24,7 +24,11 @@
 
 Update Logs
 ----
-<b>20161026</b>
+<b>20161102</b>
+	完善 server 端 service 实例化，同时启动 netty server 功能  
+	  
+	
+<b>20161027</b>
 	@todo  
 	Add serviceProxy  & filter  
 	Real cient & server in main package  
