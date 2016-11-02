@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import com.colorcc.ddrpc.core.annotation.DdrpcScan;
 import com.colorcc.ddrpc.core.beans.ContainerHook;
 
-@Configuration
-@ConditionalOnProperty(prefix = "ddrpc", name = "enabled", havingValue = "true", matchIfMissing = true)
-@DdrpcScan("com.colorcc.ddrpc.sample.service")
+//@Configuration
+//@ConditionalOnProperty(prefix = "ddrpc", name = "enabled", havingValue = "true", matchIfMissing = true)
+//@DdrpcScan("com.colorcc.ddrpc.sample.service")
 public class ProviderDdrpcConfig {
 	
 	@Bean

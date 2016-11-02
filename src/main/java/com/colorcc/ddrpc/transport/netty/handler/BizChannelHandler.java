@@ -8,6 +8,9 @@ import io.netty.channel.ChannelPromise;
 import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
+import com.colorcc.ddrpc.common.pojo.MethodMeta;
+import com.colorcc.ddrpc.core.beans.ServiceReposity;
+import com.colorcc.ddrpc.core.proxy.ServiceProxy;
 import com.colorcc.ddrpc.transport.netty.callback.ClientCallback;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcRequest;
 import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
@@ -29,11 +32,17 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 		System.out.println("read: " + JSON.toJSONString(msg));
 		if (msg instanceof RpcRequest) { // server receive the request, process request - > response
 			RpcRequest request = (RpcRequest) msg;
+			
+			MethodMeta methodMeta = request.getMethodMeta();
+			 
+			ServiceProxy<?> serviceProxy = ServiceReposity.serviceProxyMappers.get(request.getClassType());
+			methodMeta.setServiceProxy(serviceProxy);
+			RpcResponse resp = serviceProxy.invoke(request);
 			// do biz process
 			// 1. get methodName & paramTypes & paramValues
 			// 2. use one get method from repository
 			// 3. process the result
-			RpcResponse resp = new RpcResponse();
+//			RpcResponse resp = new RpcResponse();
 			resp.setId(UUID.randomUUID().toString());
 			resp.setData(request);
 			resp.setAttachmentItem("KEY_RESP", "SERVER_RESPONSE_READ");

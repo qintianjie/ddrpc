@@ -2,6 +2,8 @@ package com.colorcc.ddrpc.common.pojo;
 
 import java.io.Serializable;
 
+import com.colorcc.ddrpc.core.proxy.ServiceProxy;
+
 
 public class MethodMeta implements Serializable {
 	
@@ -15,13 +17,24 @@ public class MethodMeta implements Serializable {
 //
 //    private Map<String, String>  attachments;
     
-    public MethodMeta() {
+    private transient ServiceProxy<?> serviceProxy;
+    
+    public ServiceProxy<?> getServiceProxy() {
+		return serviceProxy;
+	}
+
+	public void setServiceProxy(ServiceProxy<?> serviceProxy) {
+		this.serviceProxy = serviceProxy;
+	}
+
+	public MethodMeta() {
     	
     }
     
-    public MethodMeta(String methodName, Class<?>[] parameterTypes) {
+    public MethodMeta(String methodName, Class<?>[] parameterTypes, ServiceProxy<?> serviceProxy) {
         this.methodName = methodName;
         this.parameterTypes = parameterTypes == null ? new Class<?>[0] : parameterTypes;
+        this.serviceProxy = serviceProxy;
     } 
     
 //    public MethodMeta(String methodName, Class<?>[] parameterTypes, Object[] arguments, Map<String, String> attachments) {

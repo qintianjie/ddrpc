@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.Import;
 
+import com.colorcc.ddrpc.core.beans.DdrpcFactoryBean;
 import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
 import com.colorcc.ddrpc.core.define.DdrpcBeanNameGenerator;
 import com.colorcc.ddrpc.core.define.DdrpcScannerRegistrar;
@@ -77,8 +78,7 @@ public @interface DdrpcScan {
 	 * 每个 markerInterface 都生成该类型的 proxy 
 	 * Specifies a custom ServiceFactoryBean to return a ddrpc proxy as spring bean.
 	 */
-	@SuppressWarnings("rawtypes")
-	Class<? extends ServiceFactoryBean> factoryBean() default ServiceFactoryBean.class;
+	Class<? extends DdrpcFactoryBean> factoryBean() default ServiceFactoryBean.class;
 
 	/**
 	 * 命名规则
@@ -92,5 +92,7 @@ public @interface DdrpcScan {
 	 * @return
 	 */
 	String containerHook() default "containerHook";
+	
+	boolean isProvider() default true;
 
 }

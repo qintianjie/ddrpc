@@ -21,6 +21,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 
 import com.colorcc.ddrpc.core.annotation.DdrpcService;
+import com.colorcc.ddrpc.core.beans.ReferenceFactoryBean;
 import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
 
 /**
@@ -45,6 +46,22 @@ public class DdrpcServiceClassPathScanner extends ClassPathBeanDefinitionScanner
 	 * 每个 Service 都映射成该类型
 	 */
 	private ServiceFactoryBean<?> serviceFactoryBean = new ServiceFactoryBean<>();
+	
+	/**
+	 * 每个 Client 都映射成该类型
+	 */
+	private ReferenceFactoryBean<?> referenceFactoryBean = new ReferenceFactoryBean<>();
+	
+	private boolean isProvider;
+	
+
+	public boolean isProvider() {
+		return isProvider;
+	}
+
+	public void setProvider(boolean isProvider) {
+		this.isProvider = isProvider;
+	}
 
 	/**
 	 * 工具类，用户得到 spring container信息
@@ -81,12 +98,20 @@ public class DdrpcServiceClassPathScanner extends ClassPathBeanDefinitionScanner
 	public void setMarkerInterface(Class<?> markerInterface) {
 		this.markerInterface = markerInterface;
 	}
+	
+	public ReferenceFactoryBean<?> getReferenceFactoryBean() {
+		return referenceFactoryBean;
+	}
 
-	public ServiceFactoryBean<?> getMapperFactoryBean() {
+	public void setReferenceFactoryBean(ReferenceFactoryBean<?> mapperFactoryBean) {
+		this.referenceFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new ReferenceFactoryBean<>());
+	}
+
+	public ServiceFactoryBean<?> getServiceFactoryBean() {
 		return serviceFactoryBean;
 	}
 
-	public void setMapperFactoryBean(ServiceFactoryBean<?> mapperFactoryBean) {
+	public void setServiceFactoryBean(ServiceFactoryBean<?> mapperFactoryBean) {
 		this.serviceFactoryBean = (mapperFactoryBean != null ? mapperFactoryBean : new ServiceFactoryBean<>());
 	}
 
@@ -186,40 +211,34 @@ public class DdrpcServiceClassPathScanner extends ClassPathBeanDefinitionScanner
 			// but, the actual class of the bean is MapperFactoryBean
 			definition.setAttribute("name", definition.getBeanClassName());
 			definition.getPropertyValues().add("mapperInterface", definition.getBeanClassName());
-			String ibn = "";
-			try {
-				Class<?> beanType = Class.forName(definition.getBeanClassName());
-				if (beanType != null) {
-					DdrpcService ddrpcAnno = beanType.getAnnotation(DdrpcService.class);
-					if (ddrpcAnno != null) {
-						ibn = ddrpcAnno.ibn();
-					}
+			if (this.isProvider()) {
+				String ibn = "";
+				try {
+					Class<?> beanType = Class.forName(definition.getBeanClassName());
+					if (beanType != null) {
+						DdrpcService ddrpcAnno = beanType.getAnnotation(DdrpcService.class);
+						if (ddrpcAnno != null) {
+							ibn = ddrpcAnno.ibn();
+						}
 
-					if (StringUtils.isBlank(ibn)) {
-						String simpleName = beanType.getSimpleName();
-						Character c = simpleName.charAt(0);
-						ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
+						if (StringUtils.isBlank(ibn)) {
+							String simpleName = beanType.getSimpleName();
+							Character c = simpleName.charAt(0);
+							ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
+						}
 					}
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				
+				definition.setBeanClass(this.serviceFactoryBean.getClass());
+				if (StringUtils.isNotBlank(ibn)) {
+					definition.getPropertyValues().add("impl", new RuntimeBeanReference(ibn));
+				}
+			} else {
+				definition.setBeanClass(this.referenceFactoryBean.getClass());
 			}
-			
-			definition.setBeanClass(this.serviceFactoryBean.getClass());
 			definition.getPropertyValues().add("addToConfig", this.addToConfig);
-			
-			
-//			System.out.println("==========> definition.getBeanClass() : " + definition.getBeanClass());
-////			definition.getMetadataAttribute()
-//			MutablePropertyValues kkss = definition.getPropertyValues();
-//			List<PropertyValue> propertyValueList = kkss.getPropertyValueList();
-//			for (PropertyValue pv : propertyValueList) {
-//				System.out.println("------------> " + pv.getName() + " : " + kkss.get(pv.getName()));
-//			}
-//			definition.getPropertyValues().add("impl", new BeanDefinitionHolder(definition, ibn));
-			if (StringUtils.isNotBlank(ibn)) {
-				definition.getPropertyValues().add("impl", new RuntimeBeanReference(ibn));
-			}
 			
 			boolean explicitFactoryUsed = false;
 			if (this.containerHook != null) {

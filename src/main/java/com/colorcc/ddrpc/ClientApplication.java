@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import com.colorcc.ddrpc.sample.service.HelloService;
 import com.colorcc.ddrpc.sample.service.SampleService;
 
+
 @PropertySource("classpath:/jack${qtj}.properties")
 @ComponentScan("com.colorcc.ddrpc.sample.service")
 @ComponentScan("com.colorcc.ddrpc.sample.config.consumer")

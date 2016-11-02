@@ -24,11 +24,7 @@ public class ClientMain {
 		Method[] methods = SampleService.class.getDeclaredMethods();
 		
 		for (Method method : methods){
-			// construct request by method method
-			RpcRequest request = new RpcRequest();
-			request.setMethodMeta(new MethodMeta(method.getName(), method.getParameterTypes()));
-			request.setId(UUID.randomUUID().toString());
-			request.setParamValues(new Object[] {});
+			
 			
 			// netty client
 			NettyClient client = new NettyClient(); 
@@ -41,6 +37,12 @@ public class ClientMain {
 			List<Filter> filters = new LinkedList<>();
 			filters.add(timeFilter);
 			ServiceProxy<SampleService> clientProxyWithFilter = FilterFactory.buildInvokerChain(clientProxy, filters);
+			
+			// construct request by method method
+			RpcRequest request = new RpcRequest();
+			request.setMethodMeta(new MethodMeta(method.getName(), method.getParameterTypes(), clientProxyWithFilter));
+			request.setId(UUID.randomUUID().toString());
+			request.setParamValues(new Object[] {});
 			
 			// method invoke
 			RpcResponse response = clientProxyWithFilter.invoke(request);

@@ -20,10 +20,12 @@ public class ServiceProxyInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] paramValues) throws Throwable {
 		RpcRequest request = new RpcRequest();
 		
-		MethodMeta methodMeta = new MethodMeta(method.getName(), method.getParameterTypes());
+		MethodMeta methodMeta = new MethodMeta(method.getName(), method.getParameterTypes(), serviceProxy);
 		request.setMethodMeta(methodMeta);
 		request.setParamValues(paramValues);
 		request.setId(UUID.randomUUID().toString());
+		request.setClassType(serviceProxy.getInterface());
+//		request.setMethod(method); // fastjson 不能序列化
 		RpcResponse response = serviceProxy.invoke(request);
 		return response;
 	}

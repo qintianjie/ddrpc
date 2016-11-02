@@ -44,29 +44,6 @@ public class ServiceReposity {
 			if (!knownMappers.containsKey(type)) {
 				boolean loadCompleted = false;
 				try {
-//					String ibn = "";
-//					// use it in java 8
-//					// DdrpcService[] ddrpcAnno = type.getAnnotationsByType(DdrpcService.class);
-//					// if (ArrayUtils.isNotEmpty(ddrpcAnno)) {
-//					// 		ibn = ddrpcAnno[0].ibn();
-//					// }
-//
-//					// use it in java 7
-//					DdrpcService ddrpcAnno = type.getAnnotation(DdrpcService.class);
-//					if (ddrpcAnno != null) {
-//						ibn = ddrpcAnno.ibn();
-//					}
-//
-//					if (StringUtils.isBlank(ibn)) {
-//						String simpleName = type.getSimpleName();
-//						Character c = simpleName.charAt(0);
-//						ibn = simpleName.replace(simpleName.charAt(0), Character.toLowerCase(c)) + "Impl";
-//					}
-//					T obj = null;
-//					if (StringUtils.isNoneBlank(ibn)) {
-//						ApplicationContext applicationContext = ddrpcFactoryBean.getApplicationContext();
-//						obj = (T) applicationContext.getBean(ibn);
-//					}
 					if (impl != null) {
 						knownMappers.put(type, impl);
 						try {

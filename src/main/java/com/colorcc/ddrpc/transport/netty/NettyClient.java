@@ -17,6 +17,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
+import com.colorcc.ddrpc.common.tools.URL;
 import com.colorcc.ddrpc.transport.netty.callback.ClientCallback;
 import com.colorcc.ddrpc.transport.netty.callback.ClientCallbackImpl;
 import com.colorcc.ddrpc.transport.netty.decoder.StringToRpcResponseDecoder;
@@ -33,6 +34,16 @@ public class NettyClient {
 	private Channel channel;
 	private EventLoopGroup group;
 	private ClientCallback<RpcResponse> callback;
+	private String hostname;
+	private int port;
+	
+	public String getHostname() {
+		return hostname;
+	}
+
+	public int getPort() {
+		return port;
+	}
 
 	public BizChannelHandler getHandler() {
 		return handler;
@@ -59,6 +70,28 @@ public class NettyClient {
 		this.group = new NioEventLoopGroup(1);
 		this.callback = new ClientCallbackImpl<>();
 		this.handler = new BizChannelHandler(callback);
+		this.hostname = "127.0.0.1";
+		this.port = 9088;
+		init();
+	}
+	
+	public NettyClient(URL url) {
+		this.bootstrap = new Bootstrap();
+		this.group = new NioEventLoopGroup(1);
+		this.callback = new ClientCallbackImpl<>();
+		this.handler = new BizChannelHandler(callback);
+		this.hostname = url.getHost();
+		this.port = url.getPort();
+		init();
+	}
+	
+	public NettyClient(String hostname, int port) {
+		this.bootstrap = new Bootstrap();
+		this.group = new NioEventLoopGroup(1);
+		this.callback = new ClientCallbackImpl<>();
+		this.handler = new BizChannelHandler(callback);
+		this.hostname = hostname;
+		this.port = port;
 		init();
 	}
 
@@ -67,7 +100,7 @@ public class NettyClient {
 		bootstrap = bootstrap
 			.group(group)
 			.channel(NioSocketChannel.class)
-			.remoteAddress("127.0.0.1", 9088)
+			.remoteAddress(this.getHostname(), this.getPort())
 			.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
 			.handler(new ChannelInitializer<SocketChannel>() {
 				@Override

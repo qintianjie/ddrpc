@@ -24,6 +24,10 @@
 
 Update Logs
 ----
+<b>20161103</b>  
+	前后端跑通。 不过 method -> registry 未考虑 parameterTypes ，待解决  
+	
+
 <b>20161102</b>  
 	完善 server 端 service 实例化，同时启动 netty server 功能  
 	  

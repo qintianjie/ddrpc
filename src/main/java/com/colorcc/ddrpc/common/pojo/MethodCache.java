@@ -6,18 +6,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MethodCache {
 
 	private static final ConcurrentHashMap<String, Method> methods = new ConcurrentHashMap<>();
-
+	
+	// @TODO 需要考虑带参数类型
 	public static void registerMethod(Class<?> iface, Object impl) {
 		for (Method m : impl.getClass().getMethods()) {
 			m.setAccessible(true);
+//			Class<?>[] parameterTypes = m.getParameterTypes();
+//			String string = Arrays.toString(parameterTypes);
 			methods.putIfAbsent(iface.getName() + "." + m.getName(), m);
 		}
 	}
 
+	// @TODO 需要考虑带参数类型
 	public static Method getMethod(String serviceName, String methodName) {
 		return methods.get("" + serviceName + "." + methodName);
 	}
 
+	// @TODO 需要考虑带参数类型
 	public static Method getMethod(Class<?> iface, String methodName) {
 		return methods.get("" + iface.getName() + "." + methodName);
 	}

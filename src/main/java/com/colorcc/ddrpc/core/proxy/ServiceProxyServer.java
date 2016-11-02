@@ -21,7 +21,7 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 	public ServiceProxyServer(Class<T> ifs, URL url, T impl) {
 		super(ifs, url);
 		this.impl = impl;
-		
+		 
 		MethodCache.registerMethod(ifs, impl);
 	} 
 	
@@ -30,7 +30,10 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 		MethodMeta methodMeta = request.getMethodMeta();
 		Object[] paramValues = request.getParamValues();
 		
+		
+		
         Method m = MethodCache.getMethod(getInterface(), methodMeta.getMethodName());
+//		Method m = request.getMethod();
         Object returnValue = null;
         try {
 			returnValue = m.invoke(impl, paramValues);

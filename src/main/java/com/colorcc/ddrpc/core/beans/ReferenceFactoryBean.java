@@ -14,23 +14,11 @@ import org.springframework.beans.factory.InitializingBean;
  * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved. 
  * @param <T>
  */
-public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean, DdrpcFactoryBean {
+public class ReferenceFactoryBean<T> implements FactoryBean<T>, InitializingBean, DdrpcFactoryBean {
 
 	private Class<T> mapperInterface;
 	private boolean addToConfig = true;
-	ServiceReposity reposity = new ServiceReposity();
-	private T impl;
-	
-	
-
-	public T getImpl() {
-		return impl;
-	}
-
-	public void setImpl(T impl) {
-		this.impl = impl;
-	}
-
+	ReferenceReposity reposity = new ReferenceReposity();
 	/**
 	 * Spring container 工具，拿到 context 可做很多事
 	 */
@@ -44,23 +32,23 @@ public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean, 
 		this.containerHook = containerHook;
 	}
 
-	public ServiceFactoryBean(Class<T> mapperInterface) {
+	public ReferenceFactoryBean(Class<T> mapperInterface) {
 		this.mapperInterface = mapperInterface;
 	}
 
-	public ServiceFactoryBean() {
+	public ReferenceFactoryBean() {
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (!reposity.hasMapper(this.mapperInterface)) {
-			reposity.addMapper(this.mapperInterface, impl, containerHook);
+			reposity.addMapper(this.mapperInterface, containerHook);
 		}
 	}
 
 	@Override
 	public T getObject() throws Exception {
-		return reposity.getMapper(this.mapperInterface, impl, containerHook);
+		return reposity.getMapper(this.mapperInterface, containerHook);
 	}
 
 	@Override

@@ -16,6 +16,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import com.colorcc.ddrpc.core.annotation.DdrpcScan;
+import com.colorcc.ddrpc.core.beans.DdrpcFactoryBean;
+import com.colorcc.ddrpc.core.beans.ReferenceFactoryBean;
 import com.colorcc.ddrpc.core.beans.ServiceFactoryBean;
 
 /**
@@ -46,9 +48,15 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 		if (!Class.class.equals(markerInterface)) {
 			scanner.setMarkerInterface(markerInterface);
 		}
-		Class<? extends ServiceFactoryBean<?>> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
-		if (!ServiceFactoryBean.class.equals(mapperFactoryBeanClass)) {
-			scanner.setMapperFactoryBean(BeanUtils.instantiateClass(mapperFactoryBeanClass));
+//		Class<? extends ServiceFactoryBean<?>> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
+		Class<? extends DdrpcFactoryBean> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
+		boolean isProvider = annoAttrs.getBoolean("isProvider");
+		scanner.setProvider(isProvider);
+		
+		if (!ServiceFactoryBean.class.equals(mapperFactoryBeanClass) && isProvider) {
+			scanner.setServiceFactoryBean((ServiceFactoryBean<?>)BeanUtils.instantiateClass(mapperFactoryBeanClass));
+		} else if(!ReferenceFactoryBean.class.equals(mapperFactoryBeanClass)&& !isProvider) {
+			scanner.setReferenceFactoryBean((ReferenceFactoryBean<?>)BeanUtils.instantiateClass(mapperFactoryBeanClass));
 		}
 		
 		Class<? extends BeanNameGenerator> generatorClass = annoAttrs.getClass("nameGenerator");
