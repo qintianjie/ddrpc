@@ -13,7 +13,7 @@ import com.colorcc.ddrpc.sample.service.SampleService;
 
 @PropertySource("classpath:/jack${qtj}.properties")
 @ComponentScan("com.colorcc.ddrpc.sample.service")
-@ComponentScan("com.colorcc.ddrpc.sample.config")
+@ComponentScan("com.colorcc.ddrpc.sample.config.consumer")
 @SpringBootApplication
 public class ClientApplication {
 
