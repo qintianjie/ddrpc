@@ -27,7 +27,7 @@ public class ServiceProxyInvocationHandler implements InvocationHandler {
 		request.setClassType(serviceProxy.getInterface());
 //		request.setMethod(method); // fastjson 不能序列化
 		RpcResponse response = serviceProxy.invoke(request);
-		return response;
+		return response.getData();
 	}
 
 }

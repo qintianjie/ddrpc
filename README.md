@@ -25,7 +25,20 @@
 Update Logs
 ----
 <b>20161103</b>  
-	前后端跑通。 不过 method -> registry 未考虑 parameterTypes ，待解决  
+	前后端跑通。 不过 method -> registry 未考虑 parameterTypes ，待解决   
+	Provider & Consumer 通过RPC方式跑通。 需要优化的地方为 method 存入 methodcache 要考虑同名不同参数区分。类型参数需要转换成 对象类型， Date <---> long / string 需要特殊处理。 
+	@TODO 优化代码结构
+	
+	目前偷懒，把 provider & consumer 的启动类在一个项目里。 如果各自独立项目，不需要如下烦琐操作。  
+	Provider 启动： 
+		com.colorcc.ddrpc.sample.config.provider.ProviderDdrpcConfig 文件annotation 生效   
+		com.colorcc.ddrpc.sample.config.consumer.ConsumerDdrpcConfig 文件annotation 无效  
+		执行com.colorcc.ddrpc.ColorccDdrpcApplication 看到 server start.  
+	Consumer 启动 & 测试：  
+		com.colorcc.ddrpc.sample.config.provider.ProviderDdrpcConfig 文件annotation 无效  
+		com.colorcc.ddrpc.sample.config.consumer.ConsumerDdrpcConfig 文件annotation 生效  
+		执行com.colorcc.ddrpc.ClientApplication 看到  consumer 执行结果。
+	
 	
 
 <b>20161102</b>  
