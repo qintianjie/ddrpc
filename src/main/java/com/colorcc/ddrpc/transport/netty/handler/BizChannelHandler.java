@@ -44,15 +44,15 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 			// 3. process the result
 //			RpcResponse resp = new RpcResponse();
 			resp.setId(UUID.randomUUID().toString());
-			resp.setData(request);
+//			resp.setData(request);
 			resp.setAttachmentItem("KEY_RESP", "SERVER_RESPONSE_READ");
 			ctx.writeAndFlush(resp);
 		} else if (msg instanceof RpcResponse) { // client reveive the response, process the result
 			RpcResponse response = (RpcResponse) msg;
 
 			this.getCallback().processResponse(response);
-			// RpcResponse result = this.getCallback().getResult();
-			// System.out.println(JSON.toJSONString(result));
+			 RpcResponse result = this.getCallback().getResult();
+			 System.out.println(JSON.toJSONString(result));
 			ctx.channel().disconnect();
 		} else {
 			System.out.println(JSON.toJSONString(msg));

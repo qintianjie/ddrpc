@@ -108,10 +108,10 @@ public class NettyClient {
 					ch.pipeline()
 						.addLast(new IdleStateHandler(40,50,70, TimeUnit.SECONDS))
 						.addLast(new HeartbeatServerHandler())
-						.addLast(new StringDecoder(), 
-							 new StringToRpcResponseDecoder(), 
-							 new StringEncoder(), // String -> byte
-							 new RpcRequestToStringEncoder())
+						.addLast(new StringDecoder(), // in: byte -> string
+							 new StringToRpcResponseDecoder(), // in: string -> RpcResponse
+							 new StringEncoder(), // out : String -> byte
+							 new RpcRequestToStringEncoder())// out : RpcRequest -> string
 						.addLast("bizHandler", handler);
 				}
 		});

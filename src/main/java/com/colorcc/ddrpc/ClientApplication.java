@@ -1,7 +1,5 @@
 package com.colorcc.ddrpc;
 
-import java.util.Date;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,7 +25,9 @@ public class ClientApplication {
 		// @formatter:on
 		System.out.println("==========================================================");
 		SampleService sampleService = (SampleService) context.getBean(SampleService.class.getName());
-		System.out.println(sampleService.say("jack", 12, new Date()));
+//		System.out.println(sampleService.say("jack", new Integer(12), new Date()));
+//		System.out.println(sampleService.say("jack", new Integer(12), "oliaoba"));
+		String say = sampleService.say("jack", new Integer(12), "oliaoba");
 		System.out.println(sampleService.say());
 		sampleService.say();
 		System.out.println("==========================================================");

@@ -32,7 +32,8 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 		
 		
 		
-        Method m = MethodCache.getMethod(getInterface(), methodMeta.getMethodName());
+//        Method m = MethodCache.getMethod(getInterface(), methodMeta.getMethodName());
+        Method m = MethodCache.getMethod(getInterface(), methodMeta);
 //		Method m = request.getMethod();
         Object returnValue = null;
         try {

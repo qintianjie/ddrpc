@@ -1,6 +1,7 @@
 package com.colorcc.ddrpc.common.pojo;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MethodCache {
@@ -11,9 +12,9 @@ public class MethodCache {
 	public static void registerMethod(Class<?> iface, Object impl) {
 		for (Method m : impl.getClass().getMethods()) {
 			m.setAccessible(true);
-//			Class<?>[] parameterTypes = m.getParameterTypes();
-//			String string = Arrays.toString(parameterTypes);
-			methods.putIfAbsent(iface.getName() + "." + m.getName(), m);
+			Class<?>[] parameterTypes = m.getParameterTypes();
+			String string = Arrays.toString(parameterTypes);
+			methods.putIfAbsent(iface.getName() + "." + m.getName() + "_" + string, m);
 		}
 	}
 
@@ -25,6 +26,12 @@ public class MethodCache {
 	// @TODO 需要考虑带参数类型
 	public static Method getMethod(Class<?> iface, String methodName) {
 		return methods.get("" + iface.getName() + "." + methodName);
+	}
+	
+	public static Method getMethod(Class<?> iface, MethodMeta meta) {
+		Class<?>[] parameterTypes = meta.getParameterTypes();
+		String string = Arrays.toString(parameterTypes);
+		return methods.get(iface.getName() + "." + meta.getMethodName() + "_" + string);
 	}
 	
 //	private static final ConcurrentHashMap<String, MethodMeta> methods = new ConcurrentHashMap<>();
