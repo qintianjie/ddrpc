@@ -26,15 +26,14 @@ public class ClientApplication {
 		System.out.println("==========================================================");
 		SampleService sampleService = (SampleService) context.getBean(SampleService.class.getName());
 //		System.out.println(sampleService.say("jack", new Integer(12), new Date()));
-//		System.out.println(sampleService.say("jack", new Integer(12), "oliaoba"));
-		String say = sampleService.say("jack", new Integer(12), "oliaoba");
-		System.out.println(sampleService.say());
-		sampleService.say();
-		System.out.println("==========================================================");
-		HelloService helloService = (HelloService) context.getBean(HelloService.class.getName());
-		System.out.println(helloService.hello());
-		System.out.println(helloService.hello("jack"));
-		System.out.println("==========================================================");
+		System.out.println(sampleService.say("jack", new Integer(12), "oliaoba"));
+//		System.out.println(sampleService.say());
+//		sampleService.say();
+//		System.out.println("==========================================================");
+//		HelloService helloService = (HelloService) context.getBean(HelloService.class.getName());
+//		System.out.println(helloService.hello());
+//		System.out.println(helloService.hello("jack"));
+//		System.out.println("==========================================================");
 
 		System.out.println("done");
 	}
