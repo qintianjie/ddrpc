@@ -5,8 +5,8 @@
 
 	<groupId>com.colorcc.ddrpc</groupId>
 	<artifactId>ddrpc</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<name>ddrpc</name>
 	<description>Demo project for Spring Boot</description>
@@ -84,13 +84,20 @@
 	</dependencies>
 
 	<build>
+		<finalName>ddrpc-core</finalName>
+		<!-- 
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		 -->
 	</build>
 
 
+	<modules>
+		<module>ddrpc-core</module>
+		<module>ddrpc-sample</module>
+	</modules>
 </project>
