@@ -24,8 +24,12 @@
 
 Update Logs
 ----
-<b>20161103</b>  
-	按module 拆分
+<b>20161109</b>   
+	完善sample， 启动 ProviderMain, ConsmerMain, 访问: http://localhost:8017/sample/say?name=washa  
+	 
+<b>20161108</b>  
+	按module 拆分  
+	
 <b>20161103</b>  
 	前后端跑通。 不过 method -> registry 未考虑 parameterTypes ，待解决   
 	Provider & Consumer 通过RPC方式跑通。 需要优化的地方为 method 存入 methodcache 要考虑同名不同参数区分。类型参数需要转换成 对象类型， Date <---> long / string 需要特殊处理。 

@@ -8,8 +8,15 @@ public class RpcResponse implements Serializable {
 	private static final long serialVersionUID = 7183970964234737098L;
 	private String id;
 	private Object data;
-	
+	private int status;
 	private Map<String, String>  attachments;
+	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
 	public String getId() {
 		return id;
 	}

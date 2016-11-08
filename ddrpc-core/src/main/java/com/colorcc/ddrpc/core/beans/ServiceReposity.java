@@ -1,7 +1,8 @@
 package com.colorcc.ddrpc.core.beans;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -13,6 +14,11 @@ import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ServiceProxy;
+import com.colorcc.ddrpc.core.proxy.filter.AccountFilter;
+import com.colorcc.ddrpc.core.proxy.filter.Filter;
+import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
+import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
+import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
@@ -25,30 +31,28 @@ import com.colorcc.ddrpc.transport.netty.NettyServer;
  *          All Rights Reserved.
  */
 public class ServiceReposity {
-
-	public static final Map<Class<?>, Object> knownMappers = new HashMap<>();
 	public static final Map<Class<?>, ServiceProxy<?>> serviceProxyMappers = new HashMap<>();
-	public static final Map<Method, MethodMeta> methodMappers = new HashMap<>();
 	public static final Map<String, NettyServer> serverMap = new HashMap<>(); 
 	private final Lock lock = new ReentrantLock();
+	
+	public static final Map<String, MethodMeta> methodProxyMappers = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
-	public <T> T getMapper(Class<T> type, T impl, ContainerHook ddrpcFactoryBean) throws Exception {
-		T obj = (T) knownMappers.get(type);
+	public <T> ServiceProxy<T>  getMapper(Class<T> type, T impl, ContainerHook ddrpcFactoryBean) throws Exception {
+		ServiceProxy<T>  obj = (ServiceProxy<T>) serviceProxyMappers.get(type);
 		if (obj == null) {
 			addMapper(type, impl, ddrpcFactoryBean);
-			obj = (T) knownMappers.get(type);
+			obj = (ServiceProxy<T> ) serviceProxyMappers.get(type);
 		}
 		return obj;
 	}
 
 	public <T> void addMapper(final Class<T> type, T impl, ContainerHook ddrpcFactoryBean) throws DdrpcException {
 		if (type.isInterface()) {
-			if (!knownMappers.containsKey(type)) {
+			if (!serviceProxyMappers.containsKey(type)) {
 				boolean loadCompleted = false;
 				try {
 					if (impl != null) {
-						knownMappers.put(type, impl);
 						try {
 							ProxyFactory factory = new JdkProxyFactory();
 							final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
@@ -56,7 +60,17 @@ public class ServiceReposity {
 								.param("uid", UUID.randomUUID().toString()).build();
 							System.out.println(" ==> service: " + url);
 							ServiceProxy<T> proxy = factory.getProxy(impl, type, url);
-							serviceProxyMappers.put(type, proxy); 
+							
+							Filter timeFilter = new TimeFilter();
+							Filter printFilter = new PrintFilter();
+							Filter accountFilter = new AccountFilter();
+							List<Filter> filters = new LinkedList<>();
+							filters.add(timeFilter);
+							filters.add(printFilter);
+							filters.add(accountFilter);
+							ServiceProxy<T> proxyWithFilter = FilterFactory.buildInvokerChain(proxy, filters);
+							
+							serviceProxyMappers.put(type, proxyWithFilter); 
 							
 							// open the server
 							final String key = url.getHost() + "_" + url.getPort();
@@ -93,7 +107,7 @@ public class ServiceReposity {
 					loadCompleted = true;
 				} finally {
 					if (!loadCompleted) {
-						knownMappers.remove(type);
+						serviceProxyMappers.remove(type);
 					}
 				}
 			}
@@ -101,7 +115,7 @@ public class ServiceReposity {
 	}
 
 	public <T> boolean hasMapper(Class<T> type) {
-		return knownMappers.containsKey(type);
+		return serviceProxyMappers.containsKey(type);
 	}
 
 }

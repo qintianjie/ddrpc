@@ -1,6 +1,5 @@
 package com.colorcc.ddrpc.core.beans;
 
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -14,14 +13,12 @@ import org.springframework.beans.factory.InitializingBean;
  * Copyright (c) 2016, tianjieqin@126.com All Rights Reserved. 
  * @param <T>
  */
-public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean, DdrpcFactoryBean {
+public class ServiceFactoryBean<T> implements InitializingBean, DdrpcFactoryBean {
 
 	private Class<T> mapperInterface;
 	private boolean addToConfig = true;
 	ServiceReposity reposity = new ServiceReposity();
 	private T impl;
-	
-	
 
 	public T getImpl() {
 		return impl;
@@ -56,21 +53,6 @@ public class ServiceFactoryBean<T> implements FactoryBean<T>, InitializingBean, 
 		if (!reposity.hasMapper(this.mapperInterface)) {
 			reposity.addMapper(this.mapperInterface, impl, containerHook);
 		}
-	}
-
-	@Override
-	public T getObject() throws Exception {
-		return reposity.getMapper(this.mapperInterface, impl, containerHook);
-	}
-
-	@Override
-	public Class<?> getObjectType() {
-		return this.mapperInterface;
-	}
-
-	@Override
-	public boolean isSingleton() {
-		return true;
 	}
 
 	public Class<T> getMapperInterface() {

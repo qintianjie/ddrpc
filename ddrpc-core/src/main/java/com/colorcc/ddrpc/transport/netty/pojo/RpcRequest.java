@@ -1,7 +1,6 @@
 package com.colorcc.ddrpc.transport.netty.pojo;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,29 +13,19 @@ public class RpcRequest implements Serializable {
 	private MethodMeta methodMeta;
 	private Object[] paramValues;
 	private Map<String, String>  attachments;
-	private Method method;
-	
-	public Method getMethod() {
-		return method;
-	}
-
-	public void setMethod(Method method) {
-		this.method = method;
-	}
 
 	private Class<?> classType;
 
 	public RpcRequest() {
 
 	} 
-
-	public RpcRequest(Method method, MethodMeta methodMeta, Object[] paramValues, Map<String, String>  attachments, Class<?> classType) {
+	
+	public RpcRequest(MethodMeta methodMeta, Object[] paramValues, Map<String, String>  attachments, Class<?> classType) {
 		this.id = UUID.randomUUID().toString();
 		this.methodMeta = methodMeta;
 		this.paramValues = paramValues;
 		this.attachments = attachments;
 		this.classType = classType;
-		this.method = method;
 	}
 
 	public Class<?> getClassType() {

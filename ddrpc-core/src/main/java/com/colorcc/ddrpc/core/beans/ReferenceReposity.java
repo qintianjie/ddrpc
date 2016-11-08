@@ -14,6 +14,7 @@ import com.colorcc.ddrpc.core.proxy.ServiceProxy;
 import com.colorcc.ddrpc.core.proxy.ServiceProxyClient;
 import com.colorcc.ddrpc.core.proxy.filter.Filter;
 import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
+import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
 import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
 import com.colorcc.ddrpc.transport.netty.NettyClient;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
@@ -30,9 +31,7 @@ import com.colorcc.ddrpc.transport.netty.NettyServer;
 public class ReferenceReposity {
 
 	public static final Map<Class<?>, Object> knownMappers = new HashMap<>();
-	public static final Map<Class<?>, ServiceProxy<?>> serviceProxyMappers = new HashMap<>();
 	public static final Map<String, NettyServer> serverMap = new HashMap<>(); 
-//	private final Lock lock = new ReentrantLock();
 
 	@SuppressWarnings("unchecked")
 	public <T> T getMapper(Class<T> type, ContainerHook ddrpcFactoryBean) throws Exception {
@@ -56,10 +55,11 @@ public class ReferenceReposity {
 					
 					ServiceProxyClient<T> clientProxy = new ServiceProxyClient<>(type, null, client);
 					Filter timeFilter = new TimeFilter();
+					Filter printFilter = new PrintFilter();
 					List<Filter> filters = new LinkedList<>();
 					filters.add(timeFilter);
+					filters.add(printFilter);
 					ServiceProxy<T> clientProxyWithFilter = FilterFactory.buildInvokerChain(clientProxy, filters);
-					serviceProxyMappers.put(type, clientProxyWithFilter);
 					
 					ProxyFactory factory = new JdkProxyFactory();
 					try {

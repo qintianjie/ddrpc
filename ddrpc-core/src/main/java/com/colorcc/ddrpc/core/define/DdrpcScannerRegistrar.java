@@ -48,11 +48,11 @@ public class DdrpcScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 		if (!Class.class.equals(markerInterface)) {
 			scanner.setMarkerInterface(markerInterface);
 		}
-//		Class<? extends ServiceFactoryBean<?>> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
-		Class<? extends DdrpcFactoryBean> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
+		
 		boolean isProvider = annoAttrs.getBoolean("isProvider");
 		scanner.setProvider(isProvider);
 		
+		Class<? extends DdrpcFactoryBean> mapperFactoryBeanClass = annoAttrs.getClass("factoryBean");
 		if (!ServiceFactoryBean.class.equals(mapperFactoryBeanClass) && isProvider) {
 			scanner.setServiceFactoryBean((ServiceFactoryBean<?>)BeanUtils.instantiateClass(mapperFactoryBeanClass));
 		} else if(!ReferenceFactoryBean.class.equals(mapperFactoryBeanClass)&& !isProvider) {

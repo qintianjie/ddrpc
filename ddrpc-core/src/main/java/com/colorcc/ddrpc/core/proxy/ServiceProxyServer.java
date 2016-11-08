@@ -2,6 +2,7 @@ package com.colorcc.ddrpc.core.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.UUID;
 
 import com.colorcc.ddrpc.common.pojo.MethodCache;
@@ -23,14 +24,14 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
 		this.impl = impl;
 		 
 		MethodCache.registerMethod(ifs, impl);
+//		MethodCache.registerMethodMetas(ifs, impl, this);
 	} 
 	
 	@Override
 	public RpcResponse invoke(RpcRequest request) {
 		MethodMeta methodMeta = request.getMethodMeta();
-		Object[] paramValues = request.getParamValues();
-		
-		
+		Class<?>[] parameterTypes = methodMeta.getParameterTypes();
+		Object[] paramValues = getParameterValues(parameterTypes, request.getParamValues());
 		
 //        Method m = MethodCache.getMethod(getInterface(), methodMeta.getMethodName());
         Method m = MethodCache.getMethod(getInterface(), methodMeta);
@@ -46,5 +47,20 @@ public class ServiceProxyServer<T> extends AbstractServiceProxy<T> {
         response.setId(UUID.randomUUID().toString());
         response.setData(returnValue);
 		return response;
+	}
+	
+	private Object[] getParameterValues(Class<?>[] parameterTypes, Object[] paramValues) {
+		if (paramValues == null || paramValues.length < 1 || paramValues.length != parameterTypes.length) {
+			return null;
+		} else {
+			for (int i = 0; i < parameterTypes.length; i++) {
+				Class<?> c = parameterTypes[i];
+				if (c.equals(Date.class) && (paramValues[i].getClass().equals(long.class) || paramValues[i].getClass().equals(Long.class))) {
+					paramValues[i] = new Date((Long)paramValues[i]); 
+				}
+			}
+		}
+		
+		return paramValues;
 	}
 }
