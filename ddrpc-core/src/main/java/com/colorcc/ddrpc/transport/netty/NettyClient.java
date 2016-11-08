@@ -125,6 +125,7 @@ public class NettyClient {
 					if (f.isSuccess()) {
 						channel = f.channel();
 						channel.writeAndFlush(request);
+						System.out.println();
 					} else {
 						// log it
 						Throwable cause = f.cause();
@@ -136,7 +137,7 @@ public class NettyClient {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			this.getGroup().shutdownGracefully();
+//			this.getGroup().shutdownGracefully();
 		}
 	}
 

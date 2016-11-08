@@ -12,7 +12,6 @@ public class StringToRpcResponseDecoder extends MessageToMessageDecoder<String> 
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, String msg, List<Object> out) throws Exception {
-		System.out.println("response str: " + msg);
 		RpcResponse request = JSON.parseObject(msg, RpcResponse.class);
 		out.add(request);
 	}
