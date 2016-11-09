@@ -41,7 +41,7 @@ git clone https://github.com/qintianjie/ddrpc.git
 	
 方法二: 
 --
- consumer / provider 执行 mvn clean package -Dmaven.test.skip
+ ddrpc-sample-consumer / ddrpc-sample-provider 执行 mvn clean package -Dmaven.test.skip 
  依次执行  java -jar xxx.jar
  
 验证:
