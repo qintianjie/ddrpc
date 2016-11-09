@@ -1,4 +1,4 @@
-基于 SpringBoot 的 Rpc 调用框架
+基于Rpc 调用框架
 =================================
 基于 SpringBoot 框架，实现一个 rpc 框架。 其特点是：
 * 启动简单。  main() 函数启动，最简单形式。
@@ -11,16 +11,15 @@
 		public class DdrpcConfig {
 			
 			@Bean
-			public DdrpcFactoryBean ddrpcFactoryBean() {
-				return new DdrpcFactoryBean();
+			public ContainerHook containerHook() {
+				return new ContainerHook();
 			}
 		
 		}
 	```
 限制
 --
-1. 依赖 SpringBoot框架。
-2. 针对接口编程，将接口服务提供出去。
+1. 针对接口编程，将接口服务提供出去。
 
 Update Logs
 ----
