@@ -35,13 +35,13 @@ git clone https://github.com/qintianjie/ddrpc.git
    
 方法一: 
 --
-导入 eclipse  并依次启动Main方法：
-	com.colorcc.ddrpc.sample.provider.main.ProviderMain
-	com.colorcc.ddrpc.sample.consumer.main.ConsumerMain
+导入 eclipse  并依次启动Main方法：  
+	com.colorcc.ddrpc.sample.provider.main.ProviderMain  
+	com.colorcc.ddrpc.sample.consumer.main.ConsumerMain  
 	
 方法二: 
---
- ddrpc-sample-consumer / ddrpc-sample-provider 执行 mvn clean package -Dmaven.test.skip 
+--  
+ ddrpc-sample-consumer / ddrpc-sample-provider 执行 mvn clean package -Dmaven.test.skip   
  依次执行  java -jar xxx.jar
  
 验证:
@@ -50,6 +50,21 @@ git clone https://github.com/qintianjie/ddrpc.git
 
 Update Logs
 =================================
+<b>20161110</b>  
+
+服务注册到ZK，格式如下。 
+```
+[zk: localhost:2181(CONNECTED) 100] ls /ddrpc/provider/com.colorcc.ddrpc.sample.service.HelloService   
+[127.0.0.1:9088, 127.0.0.1:9089]   
+[zk: localhost:2181(CONNECTED) 101] ls /ddrpc/provider/com.colorcc.ddrpc.sample.service.SampleService   
+[127.0.0.1:9088, 127.0.0.1:9089]   
+
+[zk: localhost:2181(CONNECTED) 102] get /ddrpc/provider/com.colorcc.ddrpc.sample.service.SampleService/127.0.0.1:9088   
+ddrpc://127.0.0.1:9088?service=com.colorcc.ddrpc.sample.service.SampleService&uid=5b99c5b2-5d6e-4889-9f78-0096eac02b87   
+```   
+ @TODO： NettyServer 启动参数提取配置化，方便启动多个Provider   
+        Consumer 启动时从ZK取service下面节点名，对取到列表存入本地。  请求来时进行 load balance ... 动态创建 client.   
+
 <b>20161109</b>   
 	完善sample， 启动 ProviderMain, ConsmerMain, 访问: http://localhost:8017/sample/say?name=duoduo  
 	 

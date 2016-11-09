@@ -19,6 +19,7 @@ import com.colorcc.ddrpc.core.proxy.filter.Filter;
 import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
 import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
 import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
+import com.colorcc.ddrpc.core.zk.curator.ZkServiceRegister;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
@@ -72,32 +73,7 @@ public class ServiceReposity {
 							
 							serviceProxyMappers.put(type, proxyWithFilter); 
 							
-							// open the server
-							final String key = url.getHost() + "_" + url.getPort();
-							if (!serverMap.containsKey(key)) {
-								lock.lock();
-								try {
-									if (!serverMap.containsKey(key)) {
-										System.out.println("=====> server init. " + type.getName());
-										serverMap.put(key, null); // 占位符，实际考虑同步机制
-										Thread t = new Thread(new Runnable() {
-											@Override
-											public void run() {
-												if(serverMap.containsKey(key)) {
-													NettyServer server = new NettyServer(url);
-													serverMap.put(key, server);
-													server.start();
-												}
-											}
-										});
-										t.start(); 
-									}
-								} finally {
-									lock.unlock();
-								}
-							} else {
-								System.out.println("=====> server has start. " + type.getName());
-							}
+							openServer(type, url);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -112,6 +88,39 @@ public class ServiceReposity {
 				}
 			}
 		}
+	}
+
+	private <T> void openServer(final Class<T> type, final URL url) {
+		// open the server
+		final String key = url.getHost() + "_" + url.getPort();
+		//  启动 netty server
+		if (!serverMap.containsKey(key)) {
+			lock.lock();
+			try {
+				if (!serverMap.containsKey(key)) {
+					System.out.println("=====> server init. " + type.getName());
+					serverMap.put(key, null); // 占位符，实际考虑同步机制
+					Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							if(serverMap.containsKey(key)) {
+								NettyServer server = new NettyServer(url);
+								serverMap.put(key, server);
+								server.start();
+							}
+						}
+					});
+					t.start(); 
+				}
+			} finally {
+				lock.unlock();
+			}
+		} else {
+			System.out.println("=====> server has start. " + type.getName());
+		}
+		
+		//  服务注册到 ZK 节点
+		ZkServiceRegister.registerProvider(url);
 	}
 
 	public <T> boolean hasMapper(Class<T> type) {
