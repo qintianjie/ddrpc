@@ -1,6 +1,6 @@
-基于Rpc 调用框架
+DDRpc 调用框架
 =================================
-基于 SpringBoot 框架，实现一个 rpc 框架。 其特点是：
+实现一个 rpc 框架。 其特点是：
 * 启动简单。  main() 函数启动，最简单形式。
 * 已有系统可以快速集成到该 rpc 框架。   通过扫描接口，生成其代理后请求具体实现。 对有接口层的系统，无需做任何业务修改。
 * 使用  & 配置简单。 基本功能仅需定义如下 config 即可 (其中 @DdrpcScan 指定要对外提供服务的 package 即可):
@@ -18,13 +18,40 @@
 		}
 	```
 限制
---
+=================================
 1. 针对接口编程，将接口服务提供出去。
 
+
+RPC 核心思想
+=================================
+1. Spring NamespaceHandler / Annotation 进行 bean definition. 通过 spring 进行对象实例化。 同时创建 NettyServer.
+2. Proxy 对 Consumer 端接口进行封装。 对每个请求，即每个 Method.invoke()： 创建 NettyClient， 对 method 序列化并发送出去。
+3. Netty  Client/Server 进行 TCP/IP 传递数据。  其中Java对象需做序列化 / 反序列处理。
+4. 通过 Proxy / Filter 对业务进行处理。
+
+范例使用
+=================================
+git clone https://github.com/qintianjie/ddrpc.git
+   
+方法一: 
+--
+导入 eclipse  并依次启动Main方法：
+	com.colorcc.ddrpc.sample.provider.main.ProviderMain
+	com.colorcc.ddrpc.sample.consumer.main.ConsumerMain
+	
+方法二: 
+--
+ consumer / provider 执行 mvn clean package -Dmaven.test.skip
+ 依次执行  java -jar xxx.jar
+ 
+验证:
+--
+浏览器输入： http://localhost:8017/sample/say?name=duoduo 
+
 Update Logs
-----
+=================================
 <b>20161109</b>   
-	完善sample， 启动 ProviderMain, ConsmerMain, 访问: http://localhost:8017/sample/say?name=washa  
+	完善sample， 启动 ProviderMain, ConsmerMain, 访问: http://localhost:8017/sample/say?name=duoduo  
 	 
 <b>20161108</b>  
 	按module 拆分  
