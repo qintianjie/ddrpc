@@ -68,16 +68,16 @@ ConsumerMain 启动
 
 Update Logs
 =================================
-<b>20161112</b>　　
- 启动参数：　　
- -Dddrpc.netty.server.port=9091  配置 netty server 端口　　
+<b>20161112</b>   
+ 启动参数：   　
+ -Dddrpc.netty.server.port=9091  配置 netty server 端口   
  
- 实现 Consumer端(Netty Client) 启动时从ZK将所有Provider 拿到存入缓存　     　
- 在一个请求到来时根据 Random　规则随机取一个Provider　处理 request　　
+ 实现 Consumer端(Netty Client) 启动时从ZK将所有Provider 拿到存入缓存   
+ 在一个请求到来时根据 Random　规则随机取一个Provider　处理 request   
  
- 实现简单的 FailoverCluster　处理，　失败捕获异常重试。
+ 实现简单的 FailoverCluster　处理，　失败捕获异常重试。   
  
- @TODO 封装 cluster 逻辑到接口中.  
+ @TODO 封装 cluster 逻辑到接口中.     
 
 <b>20161110</b>  
 
