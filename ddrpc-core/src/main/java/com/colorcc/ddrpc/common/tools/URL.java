@@ -68,6 +68,12 @@ public final class URL {
             this.host = host;
             this.port = port;
         }
+        
+        public Builder(String protocol, String host, String port) {
+            this.protocol = protocol;
+            this.host = host;
+            this.port = Integer.valueOf(port);
+        }
 
         public Builder(URL url) {
             this.protocol = url.getProtocol();

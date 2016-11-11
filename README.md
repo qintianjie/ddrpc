@@ -37,7 +37,7 @@ git clone https://github.com/qintianjie/ddrpc.git
 方法一: 
 --
 导入 eclipse  并依次启动Main方法：  
-	com.colorcc.ddrpc.sample.provider.main.ProviderMain  
+	com.colorcc.ddrpc.sample.provider.main.ProviderMain   (-Dddrpc.netty.server.port=9091)
 	com.colorcc.ddrpc.sample.consumer.main.ConsumerMain  
 	
 方法二: 
@@ -51,16 +51,27 @@ git clone https://github.com/qintianjie/ddrpc.git
 
 Update Logs
 =================================
+<b>20161110</b>　　
+ 启动参数：　　
+ -Dddrpc.netty.server.port=9091  配置 netty server 端口　　
+ 
+ 实现 Consumer端(Netty Client) 启动时从ZK将所有Provider 拿到存入缓存　　
+ 在一个请求到来时根据 Random　规则随机取一个Provider　处理 request　　
+ 
+ 实现简单的 FailoverCluster　处理，　失败捕获异常重试。
+ 
+ @TODO 封装 cluster 逻辑到接口中.  
+
 <b>20161110</b>  
 
 服务注册到ZK，格式如下。 
 ```
-[zk: localhost:2181(CONNECTED) 100] ls /ddrpc/provider/com.colorcc.ddrpc.sample.service.HelloService   
+[zk: localhost:2181(CONNECTED) 100] ls /ddrpc/com.colorcc.ddrpc.sample.service.HelloService/provider   
 [127.0.0.1:9088, 127.0.0.1:9089]   
-[zk: localhost:2181(CONNECTED) 101] ls /ddrpc/provider/com.colorcc.ddrpc.sample.service.SampleService   
+[zk: localhost:2181(CONNECTED) 101] ls /ddrpc/com.colorcc.ddrpc.sample.service.SampleService/provider   
 [127.0.0.1:9088, 127.0.0.1:9089]   
 
-[zk: localhost:2181(CONNECTED) 102] get /ddrpc/provider/com.colorcc.ddrpc.sample.service.SampleService/127.0.0.1:9088   
+[zk: localhost:2181(CONNECTED) 102] get /ddrpc/com.colorcc.ddrpc.sample.service.SampleService/provider/127.0.0.1:9088   
 ddrpc://127.0.0.1:9088?service=com.colorcc.ddrpc.sample.service.SampleService&uid=5b99c5b2-5d6e-4889-9f78-0096eac02b87   
 ```   
  @TODO： NettyServer 启动参数提取配置化，方便启动多个Provider   
@@ -101,8 +112,8 @@ ddrpc://127.0.0.1:9088?service=com.colorcc.ddrpc.sample.service.SampleService&ui
 <b>20161026</b>  
 	Netty sample 完善,见 test package 
 	RPC实现流程思考:  
-	Client端 根据 service --生成--> proxyImpl   
-	Server端 根据 service --找到--> serviceImpl  
+	Client端 根据 service --生成--> serviceProxyClient   
+	Server端 根据 service --找到--> serviceProxyServer  
 	统一封装 client / server 的 Impl 到 一个新的 proxy, 这个 proxy 可以实现 loadbalance, monitor... 等功能.  
 	
 	
@@ -119,7 +130,7 @@ ddrpc://127.0.0.1:9088?service=com.colorcc.ddrpc.sample.service.SampleService&ui
 	
 	@TODO:  
 		1. Service 对应 proxy 生成. 简单点考虑 jdk 自动生成,复杂考虑 javassist 写公用 proxy  
-		2. Client 端将 service 的 每个 method 生成 Method对象,根据 methodName, params type/value, return type 等将 Method 对象 encoder 成 ByteBuf 准备 TCP 网络传输.  
+		2. Client 端将 service 的 每个 method 生成 Method对象,根据 methodName, params type/value 等将 Method 对象 encoder 成 ByteBuf 准备 TCP 网络传输.  
 		3. Client 端生成 proxy同时,需创建 netty client 并在 channelActive 时将 ByteBuf 发出去.  
 		4. Server 端生成 proxy对象,这里是根据 service type + ref object 生成,因此真正的service method invoke 就是 ref object 的 method invoke, 从而达到方法在对象上执行.  
 		5. Server 端创建 netty server,根据步骤 3　接受 tcp ByteBuf,在 channelRead 方法对其进行 decoder(msg),得到的是客户端 Method　对象属性,根据该对象在步骤2提供的属性,找到 ref object　对应的方法,将步骤2的 valuec传入 ref object　方法执行.  

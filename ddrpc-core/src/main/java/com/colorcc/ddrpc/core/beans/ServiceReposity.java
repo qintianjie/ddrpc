@@ -19,7 +19,7 @@ import com.colorcc.ddrpc.core.proxy.filter.Filter;
 import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
 import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
 import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
-import com.colorcc.ddrpc.core.zk.curator.ZkServiceRegister;
+import com.colorcc.ddrpc.core.zk.curator.ZkUtils;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
@@ -56,7 +56,8 @@ public class ServiceReposity {
 					if (impl != null) {
 						try {
 							ProxyFactory factory = new JdkProxyFactory();
-							final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
+							String port = System.getProperty("ddrpc.netty.server.port", "9088");
+							final URL url = new URL.Builder("ddrpc", "127.0.0.1", port)
 								.param("service", type.getName())
 								.param("uid", UUID.randomUUID().toString()).build();
 							System.out.println(" ==> service: " + url);
@@ -111,6 +112,7 @@ public class ServiceReposity {
 						}
 					});
 					t.start(); 
+					//  服务注册到 ZK 节点
 				}
 			} finally {
 				lock.unlock();
@@ -118,9 +120,7 @@ public class ServiceReposity {
 		} else {
 			System.out.println("=====> server has start. " + type.getName());
 		}
-		
-		//  服务注册到 ZK 节点
-		ZkServiceRegister.registerProvider(url);
+		ZkUtils.registerProvider(url);
 	}
 
 	public <T> boolean hasMapper(Class<T> type) {
