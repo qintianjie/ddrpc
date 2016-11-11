@@ -37,7 +37,7 @@ git clone https://github.com/qintianjie/ddrpc.git
 方法一: 
 --
 导入 eclipse  并依次启动Main方法：  
-	com.colorcc.ddrpc.sample.provider.main.ProviderMain   (-Dddrpc.netty.server.port=9091)
+	com.colorcc.ddrpc.sample.provider.main.ProviderMain   (-Dddrpc.netty.server.port=9088)
 	com.colorcc.ddrpc.sample.consumer.main.ConsumerMain  
 	
 方法二: 
@@ -72,7 +72,7 @@ Update Logs
  启动参数：　　
  -Dddrpc.netty.server.port=9091  配置 netty server 端口　　
  
- 实现 Consumer端(Netty Client) 启动时从ZK将所有Provider 拿到存入缓存　　
+ 实现 Consumer端(Netty Client) 启动时从ZK将所有Provider 拿到存入缓存　     　
  在一个请求到来时根据 Random　规则随机取一个Provider　处理 request　　
  
  实现简单的 FailoverCluster　处理，　失败捕获异常重试。
