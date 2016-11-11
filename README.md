@@ -49,9 +49,26 @@ git clone https://github.com/qintianjie/ddrpc.git
 --
 浏览器输入： http://localhost:8017/sample/say?name=duoduo 
 
+集群范例使用
+=================================
+启动： 
+-- 
+ProviderMain 启动时指定  -Dddrpc.netty.server.port=xxx 到不同的端口，启动多个 provider  
+ConsumerMain 启动  
+
+验证
+-- 
+浏览器不断输入  http://localhost:8017/sample/say?name=xxx     
+停掉一个 provider，多次请求    
+
+观察日志变化
+
+
+
+
 Update Logs
 =================================
-<b>20161110</b>　　
+<b>20161112</b>　　
  启动参数：　　
  -Dddrpc.netty.server.port=9091  配置 netty server 端口　　
  
