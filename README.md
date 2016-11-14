@@ -1,4 +1,4 @@
-不再更新
+不再更新 2016/11/15 01:52
 =================================  
 刚好两个月， RPC 主题功能基本实现。 细节不再更新。    
     
@@ -13,8 +13,11 @@ Object -> JSON -> ByteBuf
 Zookeeper keep & find provider         
 ......
 
-重要TODO： 扩展 DdrpcService or  添加新的 annotation 到method， 对每个用户 Service，个性化处理。　如哪些方法可以
-进行RPC调用，Cluster方式等。 具体在  ReferenceReposity.addMapper 里面可以根据 URL 处理。
+重要TODO： 
+1. 扩展 DdrpcService or  添加新的 annotation 到method， 对每个用户 Service，个性化处理。　如哪些方法可以
+进行RPC调用，Cluster方式等。 具体在  ReferenceReposity.addMapper 里面可以根据 URL 处理。       
+2. ZK  watch 机制，用户 provider 动态更新。     
+3. 集成 Configure center    
 
 DDRpc 调用框架
 =================================
@@ -81,6 +84,20 @@ ConsumerMain 启动
 
 观察日志变化
 
+EG:
+--
+S1:
+ProviderMain  -Dddrpc.netty.server.port=9001    
+ProviderMain  -Dddrpc.netty.server.port=9002   
+ProviderMain  -Dddrpc.netty.server.port=9003    
+
+S2:
+ConsumerMain
+
+S3:
+停止 ProviderMain  -Dddrpc.netty.server.port=9003 服务
+
+S4： 不断请求，看日志， 如果请求的是 9003 会抛出异常，选择另外一个服务继续。   默认试3次。
 
 
 
