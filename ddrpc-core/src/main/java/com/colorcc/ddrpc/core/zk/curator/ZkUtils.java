@@ -70,9 +70,6 @@ public class ZkUtils {
 		return data;
 	}
 	public static Map<String, String> getNodeChildren(String serviceProvider) {
-//		String serviceName = url.getParameter("service");
-//		String hostIpPort = url.getHost() + ":" + url.getPort();
-//		String path = serviceName + "/provider/" +  "/" + hostIpPort;
 		CuratorFramework zkClient = ZkUtils.getZkClient();
 		Map<String, String> data = new HashMap<>();
 		try {

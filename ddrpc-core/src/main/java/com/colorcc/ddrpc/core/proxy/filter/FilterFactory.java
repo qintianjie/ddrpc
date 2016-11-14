@@ -22,7 +22,7 @@ public class FilterFactory {
 				}
 
 				@Override
-				public RpcResponse invoke(RpcRequest request) {
+				public RpcResponse invoke(RpcRequest request) throws InterruptedException {
 					return filter.invoke(next, request);
 				}
 				

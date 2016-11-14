@@ -7,7 +7,7 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 public class TimeFilter implements Filter {
 
 	@Override
-	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) {
+	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) throws InterruptedException {
 		long startTime = System.nanoTime();
 		RpcResponse response = serviceProxy.invoke(request);
 		System.out.println("====filter =====> time: " + (System.nanoTime() - startTime));

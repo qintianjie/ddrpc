@@ -20,7 +20,7 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 
 public class ClientMain {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		// service
 		Method[] methods = SampleService.class.getDeclaredMethods();
 		

@@ -7,6 +7,6 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 public interface Filter {
 	
 //	Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException;
-	RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request);
+	RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) throws InterruptedException;
 
 }

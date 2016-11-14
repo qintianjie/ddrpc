@@ -16,6 +16,8 @@ import com.colorcc.ddrpc.core.proxy.filter.Filter;
 import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
 import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
 import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
+import com.colorcc.ddrpc.transport.netty.Client;
+import com.colorcc.ddrpc.transport.netty.FailoverClusterNettyClient;
 import com.colorcc.ddrpc.transport.netty.NettyClient;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
@@ -51,9 +53,10 @@ public class ReferenceReposity {
 					final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
 					.param("service", type.getName())
 					.param("uid", UUID.randomUUID().toString()).build();
-					NettyClient client =  new NettyClient(url);
+					Client client =  new NettyClient(url);
+					Client clusterClient = new FailoverClusterNettyClient(client);
 					
-					ServiceProxyClient<T> clientProxy = new ServiceProxyClient<>(type, null, client);
+					ServiceProxyClient<T> clientProxy = new ServiceProxyClient<>(type, url, clusterClient);
 					Filter timeFilter = new TimeFilter();
 					Filter printFilter = new PrintFilter();
 					List<Filter> filters = new LinkedList<>();

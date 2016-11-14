@@ -27,11 +27,16 @@ public class ClientCallbackImpl<T> implements ClientCallback<T>,  Future<T>{
 //	}
 	
 	public T getResult() {
+//		try {
+//			latch.await();
+//		} catch (InterruptedException e) {
+//		}
+//		return getData();
 		try {
-			latch.await();
+			return get();
 		} catch (InterruptedException e) {
+			return null;
 		}
-		return getData();
 	}
 
 	@Override

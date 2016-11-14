@@ -8,7 +8,7 @@ import com.colorcc.ddrpc.transport.netty.pojo.RpcResponse;
 public class PrintFilter implements Filter {
 
 	@Override
-	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) {
+	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) throws InterruptedException {
 		RpcResponse response = serviceProxy.invoke(request);
 		System.out.println("====print log: =====> time: " + JSON.toJSONString(request));
 		return response;

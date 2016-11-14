@@ -9,7 +9,7 @@ public class AccountFilter implements Filter {
 	public int account = 0;
 
 	@Override
-	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) {
+	public RpcResponse invoke(ServiceProxy<?> serviceProxy, RpcRequest request) throws InterruptedException {
 		account ++;
 		RpcResponse response;
 		if (account > 500) {

@@ -53,11 +53,9 @@ public class BizChannelHandler extends ChannelDuplexHandler {
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
 		if (msg instanceof RpcRequest) {
 			RpcRequest request = (RpcRequest) msg;
-//			request.setAttachmentItem("key", "CLIENT_REQUEST");
 			ctx.writeAndFlush(request);
 		} else if (msg instanceof RpcResponse) {
 			RpcResponse response = (RpcResponse) msg;
-//			response.setAttachmentItem("key", "SERVER_RESPONSE_WRITE");
 			ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 		} else {
 			ctx.writeAndFlush(msg);
