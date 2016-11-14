@@ -1,3 +1,21 @@
+不再更新
+=================================  
+刚好两个月， RPC 主题功能基本实现。 细节不再更新。    
+    
+包括：   
+Spring 容器启动 & 初始化         
+Failover Cluster          
+Random Load balance         
+Proxy         
+Filter         
+Netty request / response         
+Object -> JSON -> ByteBuf         
+Zookeeper keep & find provider         
+......
+
+重要TODO： 扩展 DdrpcService or  添加新的 annotation 到method， 对每个用户 Service，个性化处理。　如哪些方法可以
+进行RPC调用，Cluster方式等。 具体在  ReferenceReposity.addMapper 里面可以根据 URL 处理。
+
 DDRpc 调用框架
 =================================
 实现一个 rpc 框架。 其特点是：
@@ -68,6 +86,11 @@ ConsumerMain 启动
 
 Update Logs
 =================================
+<b>20161115</b>   
+增加 Cluster 和  Load Balance 功能。 默认 Failover & Random 方式。     
+@TODO 扩展 Annotation  @DdrpcService  or 增加 Service method annotation， 用于对具体 service 属性进行处理。 
+如： 允许那些 service methods 进行RPC 请求，  请求的 cluster 处理方式等。  
+
 <b>20161112</b>   
  启动参数：   　
  -Dddrpc.netty.server.port=9091  配置 netty server 端口   

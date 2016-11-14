@@ -1,24 +1,17 @@
 package com.colorcc.ddrpc.core.beans;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.colorcc.ddrpc.common.tools.URL;
+import com.colorcc.ddrpc.core.cluster.FailfastClusterNettyClient;
+import com.colorcc.ddrpc.core.cluster.FailoverClusterNettyClient;
 import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
-import com.colorcc.ddrpc.core.proxy.ServiceProxy;
 import com.colorcc.ddrpc.core.proxy.ServiceProxyClient;
-import com.colorcc.ddrpc.core.proxy.filter.Filter;
-import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
-import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
-import com.colorcc.ddrpc.core.proxy.filter.TimeFilter;
 import com.colorcc.ddrpc.transport.netty.Client;
-import com.colorcc.ddrpc.transport.netty.FailoverClusterNettyClient;
-import com.colorcc.ddrpc.transport.netty.NettyClient;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
@@ -53,20 +46,15 @@ public class ReferenceReposity {
 					final URL url = new URL.Builder("ddrpc", "127.0.0.1", 9088)
 					.param("service", type.getName())
 					.param("uid", UUID.randomUUID().toString()).build();
-					Client client =  new NettyClient(url);
-					Client clusterClient = new FailoverClusterNettyClient(client);
-					
-					ServiceProxyClient<T> clientProxy = new ServiceProxyClient<>(type, url, clusterClient);
-					Filter timeFilter = new TimeFilter();
-					Filter printFilter = new PrintFilter();
-					List<Filter> filters = new LinkedList<>();
-					filters.add(timeFilter);
-					filters.add(printFilter);
-					ServiceProxy<T> clientProxyWithFilter = FilterFactory.buildInvokerChain(clientProxy, filters);
+					// 首先拿到 cluster, 根据URL确定一种 cluster
+					// 然后在 cluster 中进行 load balance， 选择一个 ServiceProxy
+					// 最后对 ServiceProxy　进行 filter　包装，每个请求调用时用 filter　处理 request
+					Client clusterClient = initCluster(type, url);
+					ServiceProxyClient<T> clusterProxy = new ServiceProxyClient<>(type, clusterClient);
 					
 					ProxyFactory factory = new JdkProxyFactory();
 					try {
-						knownMappers.put(type, factory.getProxy(clientProxyWithFilter));
+						knownMappers.put(type, factory.getProxy(clusterProxy));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -78,6 +66,20 @@ public class ReferenceReposity {
 				}
 			}
 		}
+	}
+
+	// 根据 url里 cluster 参数选择
+	private <T> Client initCluster(Class<T> type, final URL url) {
+		Client clusterClient = null;
+		String clusterType = url.getParameter("cluster");
+		if ("failfast".equals(clusterType)) {
+			clusterClient = new FailfastClusterNettyClient(type, url);
+		} else if ("failsafe".equals(clusterType)) {
+			clusterClient = new FailfastClusterNettyClient(type, url);
+		} else { // failover
+			clusterClient = new FailoverClusterNettyClient(type, url);
+		}
+		return clusterClient;
 	}
 
 	public <T> boolean hasMapper(Class<T> type) {

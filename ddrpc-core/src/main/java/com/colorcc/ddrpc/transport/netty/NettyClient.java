@@ -126,6 +126,7 @@ public class NettyClient implements Client {
 	
 	public RpcResponse request(final RpcRequest request) throws InterruptedException {
 		ChannelFuture future = null;
+		System.out.println("===> request to: ["+this.getHostname() + ":" + this.getPort()+"]");
 		ClientCallback<RpcResponse> respCallback = new ClientCallbackImpl<>();
 		try {
 			future = this.getBootstrap()

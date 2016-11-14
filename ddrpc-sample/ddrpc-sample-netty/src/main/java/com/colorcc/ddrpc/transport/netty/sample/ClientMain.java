@@ -31,7 +31,7 @@ public class ClientMain {
 			NettyClient client = new NettyClient(); 
 			
 			// client proxy
-			ServiceProxyClient<SampleService> clientProxy = new ServiceProxyClient<>(SampleService.class, null, client);
+			ServiceProxyClient<SampleService> clientProxy = new ServiceProxyClient<>(SampleService.class, client);
 			
 			// client with filter
 			Filter timeFilter = new TimeFilter();
