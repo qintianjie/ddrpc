@@ -10,8 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.colorcc.ddrpc.common.tools.URL;
+import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
+import com.colorcc.ddrpc.core.proxy.ProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ServiceProxy;
-import com.colorcc.ddrpc.core.proxy.ServiceProxyClient;
 import com.colorcc.ddrpc.core.proxy.filter.Filter;
 import com.colorcc.ddrpc.core.proxy.filter.FilterFactory;
 import com.colorcc.ddrpc.core.proxy.filter.PrintFilter;
@@ -65,17 +66,22 @@ public abstract class ClusterNettyClient implements Client {
 							providerArray[i++] = hostAndPort;
 							String[] hp = hostAndPort.split(":");
 							URL reqUrl = url.resetHost(hp[0]).resetPort(Integer.valueOf(hp[1]));
-							Client lbClient = new NettyClient(reqUrl);
-							ServiceProxy<?> proxy = new ServiceProxyClient<>(this.type, lbClient);
+							Client nettyClient = new NettyClient(reqUrl);
+							try {
+								ProxyFactory jdkProxy = new JdkProxyFactory();
+								ServiceProxy<?>  proxy = jdkProxy.getProxy(type, nettyClient);
+								Filter timeFilter = new TimeFilter();
+								Filter printFilter = new PrintFilter();
+								List<Filter> filters = new LinkedList<>();
+								filters.add(timeFilter);
+								filters.add(printFilter);
+								ServiceProxy<?> clientProxyWithFilter = FilterFactory.buildInvokerChain(proxy, filters);
+								
+								serviceProxyList.add(clientProxyWithFilter);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 							
-							Filter timeFilter = new TimeFilter();
-							Filter printFilter = new PrintFilter();
-							List<Filter> filters = new LinkedList<>();
-							filters.add(timeFilter);
-							filters.add(printFilter);
-							ServiceProxy<?> clientProxyWithFilter = FilterFactory.buildInvokerChain(proxy, filters);
-							
-							serviceProxyList.add(clientProxyWithFilter);
 							
 						}
 						serviceProviders.put(serviceName, providerArray);

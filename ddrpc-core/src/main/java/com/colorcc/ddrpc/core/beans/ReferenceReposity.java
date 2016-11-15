@@ -10,7 +10,7 @@ import com.colorcc.ddrpc.core.cluster.FailoverClusterNettyClient;
 import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
-import com.colorcc.ddrpc.core.proxy.ServiceProxyClient;
+import com.colorcc.ddrpc.core.proxy.ServiceProxy;
 import com.colorcc.ddrpc.transport.netty.Client;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
@@ -50,7 +50,8 @@ public class ReferenceReposity {
 					// 然后在 cluster 中进行 load balance， 选择一个 ServiceProxy
 					// 最后对 ServiceProxy　进行 filter　包装，每个请求调用时用 filter　处理 request
 					Client clusterClient = initCluster(type, url);
-					ServiceProxyClient<T> clusterProxy = new ServiceProxyClient<>(type, clusterClient);
+					ProxyFactory jdkProxy = new JdkProxyFactory();
+					ServiceProxy<T> clusterProxy = jdkProxy.getProxy(type, clusterClient);
 					
 					ProxyFactory factory = new JdkProxyFactory();
 					try {
@@ -59,6 +60,8 @@ public class ReferenceReposity {
 						e.printStackTrace();
 					}
 					loadCompleted = true;
+				} catch (Exception e1) {
+					e1.printStackTrace();
 				} finally {
 					if (!loadCompleted) {
 						knownMappers.remove(type);
