@@ -41,7 +41,7 @@ public class ClientMain {
 			
 			// construct request by method method
 			RpcRequest request = new RpcRequest();
-			request.setMethodMeta(new MethodMeta(method.getName(), method.getParameterTypes(), clientProxyWithFilter));
+			request.setMethodMeta(new MethodMeta(method.getName(), method.getParameterTypes()));
 			request.setId(UUID.randomUUID().toString());
 			request.setParamValues(new Object[] {});
 			

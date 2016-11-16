@@ -16,7 +16,6 @@ public class JdkProxyFactory implements ProxyFactory {
 		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class[] { serviceProxy.getInterface() }, new ServiceProxyInvocationHandler( serviceProxy));
 	}
-
 	/**
 	 * For Server, use service & impl   ==> ServiceProxy
 	 */
@@ -25,6 +24,13 @@ public class JdkProxyFactory implements ProxyFactory {
 		ServiceProxy<T> proxyServer = new ServiceProxyServer<T>(type, url, proxy);
 		return proxyServer;
 	}
+	
+
+	@Override
+	public <T> ServiceProxy<T> getProxy(Class<T> type, URL url) throws Exception {
+		ServiceProxy<T> proxyClient = new ServiceProxyClient<>(type, url);
+		return proxyClient;
+	} 
 
 	/**
 	 * For client, use service & netty client ==> ServiceProxy
@@ -33,5 +39,5 @@ public class JdkProxyFactory implements ProxyFactory {
 	public <T> ServiceProxy<T> getProxy(Class<T> type, Client client) throws Exception {
 		ServiceProxy<T> proxyClient = new ServiceProxyClient<>(type, client);
 		return proxyClient;
-	} 
+	}
 }

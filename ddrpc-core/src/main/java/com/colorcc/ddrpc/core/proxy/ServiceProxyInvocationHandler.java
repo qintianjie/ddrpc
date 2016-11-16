@@ -20,7 +20,7 @@ public class ServiceProxyInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] paramValues) throws Throwable {
 		RpcRequest request = new RpcRequest();
 		
-		MethodMeta methodMeta = new MethodMeta(method.getName(), method.getParameterTypes(), serviceProxy);
+		MethodMeta methodMeta = new MethodMeta(method.getName(), method.getParameterTypes());
 		request.setMethodMeta(methodMeta);
 		request.setParamValues(paramValues);
 		request.setId(UUID.randomUUID().toString());

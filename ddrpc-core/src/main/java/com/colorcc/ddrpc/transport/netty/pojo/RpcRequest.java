@@ -89,7 +89,4 @@ public class RpcRequest implements Serializable {
 		}
 		this.getAttachments().put(key, value);
 	} 
-	
-	
-
 }

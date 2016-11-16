@@ -5,13 +5,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.colorcc.ddrpc.common.tools.URL;
-import com.colorcc.ddrpc.core.cluster.FailfastClusterNettyClient;
-import com.colorcc.ddrpc.core.cluster.FailoverClusterNettyClient;
 import com.colorcc.ddrpc.core.define.DdrpcException;
 import com.colorcc.ddrpc.core.proxy.JdkProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ProxyFactory;
 import com.colorcc.ddrpc.core.proxy.ServiceProxy;
-import com.colorcc.ddrpc.transport.netty.Client;
 import com.colorcc.ddrpc.transport.netty.NettyServer;
 
 /**
@@ -49,9 +46,13 @@ public class ReferenceReposity {
 					// 首先拿到 cluster, 根据URL确定一种 cluster
 					// 然后在 cluster 中进行 load balance， 选择一个 ServiceProxy
 					// 最后对 ServiceProxy　进行 filter　包装，每个请求调用时用 filter　处理 request
-					Client clusterClient = initCluster(type, url);
+//					Client clusterClient = initCluster(type, url);
+//					ProxyFactory jdkProxy = new JdkProxyFactory();
+//					ServiceProxy<T> clusterProxy = jdkProxy.getProxy(type, clusterClient);
+					
+//					Client clusterClient = initCluster(type, url);
 					ProxyFactory jdkProxy = new JdkProxyFactory();
-					ServiceProxy<T> clusterProxy = jdkProxy.getProxy(type, clusterClient);
+					ServiceProxy<T> clusterProxy = jdkProxy.getProxy(type, url);
 					
 					ProxyFactory factory = new JdkProxyFactory();
 					try {
@@ -71,19 +72,19 @@ public class ReferenceReposity {
 		}
 	}
 
-	// 根据 url里 cluster 参数选择
-	private <T> Client initCluster(Class<T> type, final URL url) {
-		Client clusterClient = null;
-		String clusterType = url.getParameter("cluster");
-		if ("failfast".equals(clusterType)) {
-			clusterClient = new FailfastClusterNettyClient(type, url);
-		} else if ("failsafe".equals(clusterType)) {
-			clusterClient = new FailfastClusterNettyClient(type, url);
-		} else { // failover
-			clusterClient = new FailoverClusterNettyClient(type, url);
-		}
-		return clusterClient;
-	}
+//	// 根据 url里 cluster 参数选择
+//	private <T> Client initCluster(Class<T> type, final URL url) {
+//		Client clusterClient = null;
+//		String clusterType = url.getParameter("cluster");
+//		if ("failfast".equals(clusterType)) {
+//			clusterClient = new FailfastClusterNettyClient(type, url);
+//		} else if ("failsafe".equals(clusterType)) {
+//			clusterClient = new FailfastClusterNettyClient(type, url);
+//		} else { // failover
+//			clusterClient = new FailoverClusterNettyClient(type, url);
+//		}
+//		return clusterClient;
+//	}
 
 	public <T> boolean hasMapper(Class<T> type) {
 		return knownMappers.containsKey(type);
